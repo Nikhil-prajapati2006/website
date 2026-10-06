@@ -1254,26 +1254,31 @@
 
             /* same layout as laptop: title bottom-left, credit above it on the right */
             .title {
-                left: 4vw;
+                left: 0;
+                right: 0;
                 bottom: 10px;
+                text-align: center;
                 font-size: 8vw;
                 letter-spacing: 0.12em;
+                padding-left: 0.12em; /* balances trailing letter-spacing so it is truly centered */
                 line-height: 1.1;
                 white-space: nowrap;
             }
 
+            /* centered, just above the title, half the title's size */
             .director-credit {
-                left: auto;
-                right: 4vw;
-                bottom: calc(8.8vw + 16px);
-                text-align: right;
-                font-size: 8px;
-                letter-spacing: 0.12em;
+                left: 0;
+                right: 0;
+                bottom: calc(8.8vw + 12px);
+                text-align: center;
+                font-size: 4vw;
+                letter-spacing: 0.1em;
                 margin-bottom: 0;
+                white-space: nowrap;
             }
 
             .director-credit span {
-                font-size: 1.5em;
+                font-size: 1em;
                 margin-left: 0.3em;
             }
 
