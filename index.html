@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oppenheimer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ==========================================================================
+   1. RESET & BASE STYLES
+   ========================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+        }
+
+        body {
+            overflow-y: scroll;
+            background: #000;
+            color: white;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        /* Global Typography & Resets */
+        ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Global Section Snap Setting */
+        section {
+            height: 100vh;
+            scroll-snap-align: start;
+            scroll-snap-stop: normal;
+        }
+
+        /* ==========================================================================
+   2. NAVIGATION & OVERLAYS (SHARED)
+   ========================================================================== */
+        .back {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 18px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 2.3vh;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            transition: 0.3s;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            z-index: 10;
+        }
+
+        .back:hover {
+            background: #e50914;
+            border-color: #e50914;
+            transform: translateY(-2px);
+        }
+
+        /* Split reveal effect — plays once on page load */
+        .split-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .split-overlay .panel {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: #000;
+            transition: transform 1.3s ease;
+        }
+
+        .split-overlay .panel.left {
+            left: 0;
+        }
+
+        .split-overlay .panel.right {
+            right: 0;
+        }
+
+        .split-overlay.open .panel.left {
+            transform: translateX(-100%);
+        }
+
+        .split-overlay.open .panel.right {
+            transform: translateX(100%);
+        }
+
+
+        /* ==========================================================================
+   3. SECTION 1: HERO LANDING PAGE (UNTOUCHED)
+   ========================================================================== */
+        .info-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .pill {
+            padding: 6px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 6px;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            color: #e8e8e8;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            scroll-snap-stop: always;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url('oppenheimer2.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: translateY(80px);
+            animation: fadeInUp 1.3s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(80px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+
+        .title {
+            font-family: "Mona Sans", sans-serif;
+            z-index: 2;
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            font-size: 165px;
+            font-weight: 600;
+            letter-spacing: 22px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1.3s ease forwards;
+            animation-delay: 1.3s;
+        }
+
+        @import url('https://googleapis.com');
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .director-credit {
+            font-family: 'Libre Franklin', sans-serif;
+            font-weight: 300;
+            font-size: clamp(0.85rem, 1.2vw, 1.05rem);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #e8e4dc;
+            text-align: center;
+            margin-bottom: 1rem;
+            z-index: 2;
+            position: absolute;
+            bottom: 160px;
+            left: 550px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1.8s ease-out forwards;
+            animation-delay: 1.3s;
+        }
+
+        .director-credit span {
+            font-weight: 600;
+            font-size: 1.5em;
+            letter-spacing: 0.04em;
+            color: #fff;
+            margin-left: 0.4em;
+        }
+
+        @media (max-width: 768px) {
+            .hero p {
+                font-size: 3vh;
+            }
+        }
+
+
+        /* ==========================================================================
+   4. SECTION 2: MOVIE INFO (RE-DESIGNED PREMIUM CINEMATIC BACKGROUND)
+   ========================================================================== */
+        .movie-section {
+            /* Changed from purple gradient to deep cinematic obsidian charcoal with clean vignette shading */
+            background: radial-gradient(circle at center, #16181f 0%, #0d0e12 100%);
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 80px;
+            box-sizing: border-box;
+            gap: 25px;
+        }
+
+        .genre-line {
+            color: #9a9a9a;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* Horizontal layout structures */
+        .movie-main-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 40px;
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        .poster {
+            height: 370px;
+            width: 260px;
+            border-radius: 20px;
+            object-fit: cover;
+            flex-shrink: 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+        }
+
+        .movie-details {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .movie-title {
+            font-size: 62px;
+            font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+            font-weight: 500;
+            color: #f1ede4;
+            letter-spacing: 1px;
+            line-height: 1.05;
+        }
+
+        .genre_rating {
+            display: flex;
+            align-items: center;
+            color: rgb(255, 255, 255);
+            font-size: 16px;
+            font-weight: 510;
+            font-family: sans-serif;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* .overview {
+            max-width: 850px;
+            font-size: 17px;
+            line-height: 1.6;
+            color: #b3b3b3;
+
+        } */
+
+        .overview {
+            max-width: 620px;
+            font-size: 17px;
+            line-height: 1.6;
+            color: #c7c4bd;
+            font-family: Arial, sans-serif;
+            border-left: 3px solid #e67432;
+            padding-left: 18px;
+        }
+
+        .cast_lan_wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cast_lan_wrapper h2 {
+            font-size: 20px;
+        }
+
+        .cast_lan a {
+            color: rgb(191, 186, 186);
+            transition: color 0.2s;
+        }
+
+        .cast_lan {
+            font-size: 19px;
+        }
+
+        .cast_lan a:hover {
+            color: #fff;
+
+        }
+
+        .language-text {
+            color: #fff;
+            font-size: 19px;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+
+        /* Action button configurations */
+        .button-group {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .watch_now {
+            padding: 10px 24px;
+            color: white;
+            border-radius: 11px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid rgb(230, 116, 50);
+            background-color: rgb(230, 116, 50);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .watch_now:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(230, 116, 50, 0.4);
+        }
+
+        .caution {
+            color: #ff3838;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+       
+        .trailer-gallery {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            margin-top: 0;
+        }
+
+        .card {
+            flex: 1;
+            max-width: 320px;
+            height: 175px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+        }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.15) 45%, transparent 70%);
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(230, 116, 50, 0.4);
+            border-color: #e67432;
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease, filter 0.5s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.08);
+            filter: brightness(0.75);
+        }
+
+        .card-caption {
+            position: absolute;
+            left: 16px;
+            bottom: 14px;
+            z-index: 2;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        .card:hover .card-caption {
+            color: #ffd8b8;
+        }
+
+        .play {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            z-index: 2;
+            width: 34px;
+            height: 34px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1.5px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 13px;
+            padding-left: 2px;
+            backdrop-filter: blur(4px);
+            transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .card:hover .play {
+            background: #e67432;
+            border-color: #e67432;
+            transform: scale(1.1);
+        }
+
+        /* Video popups overlays */
+        .popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .popup iframe {
+            width: 80%;
+            height: 80%;
+            border: none;
+            border-radius: 10px;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 45px;
+            color: white;
+            cursor: pointer;
+        }
+
+
+        /* ==========================================================================
+   5. SECTION 3: CAST STYLES & PICTURE REGISTRATION
+   ========================================================================== */
+        #cast {
+            background: #0a0b10;
+            display: flex;
+            align-items: center;
+            padding: 0 80px;
+        }
+
+        .cast-section {
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        .cast-section h2 {
+            font-size: 32px;
+            margin-bottom: 25px;
+            font-family: 'Libre Franklin', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .cast {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 25px;
+            overflow-x: auto;
+            padding: 10px 5px 20px;
+        }
+
+        .cast::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .cast::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+
+        @media (max-width: 800px) {
+            .four {
+                padding: 60px 25px;
+            }
+
+            .four-content {
+                grid-template-columns: 1fr;
+                gap: 45px;
+            }
+        }
+
+        /* =========================================================
+   SECTION 4 — BEHIND THE SCENES
+========================================================= */
+
+        .behind-scenes {
+            position: relative;
+            min-height: 100vh;
+            padding: 80px 7vw 70px;
+
+            background:
+                radial-gradient(circle at 75% 15%,
+                    rgba(230, 116, 50, 0.10),
+                    transparent 30%),
+                linear-gradient(135deg,
+                    #050505,
+                    #101010 55%,
+                    #080808);
+
+            overflow: hidden;
+        }
+
+
+        /* =========================================================
+   MAIN HEADER
+========================================================= */
+
+        .behind-header {
+            width: 100%;
+            max-width: 1450px;
+            margin: 0 auto;
+
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+            gap: 70px;
+
+            align-items: center;
+        }
+
+
+        /* LEFT CONTENT */
+
+        .behind-content {
+            max-width: 600px;
+        }
+
+
+        .small-heading {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+
+            margin-bottom: 25px;
+
+            color: #a5a5a5;
+
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+
+            letter-spacing: 5px;
+        }
+
+
+        .small-heading span {
+            width: 45px;
+            height: 1px;
+
+            background: #777;
+        }
+
+
+        .behind-content h2 {
+            margin-bottom: 25px;
+
+            color: #f1f1f1;
+
+            font-family: Georgia, "Times New Roman", serif;
+
+            font-size: clamp(48px,
+                    5.2vw,
+                    78px);
+
+            line-height: 1.05;
+            font-weight: 400;
+
+            letter-spacing: -2px;
+        }
+
+
+        .behind-content p {
+            max-width: 560px;
+
+            color: #a7a7a7;
+
+            font-family: Arial, sans-serif;
+
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .cast {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 10px 2vw 20px;
+        }
+
+        .cast-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 130px;
+            flex-shrink: 0;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .cast-photo {
+            height: 190px;
+            width: 130px;
+            border-radius: 10px;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+
+        .cast-card:hover .cast-photo {
+            border-color: #e50914;
+            transform: scale(1.05);
+        }
+
+        .cast-name {
+            margin-top: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+            font-family: sans-serif;
+        }
+
+        .cast-role {
+            margin-top: 3px;
+            font-size: 13px;
+            color: gray;
+            text-align: center;
+            font-family: sans-serif;
+        }
+
+        .cillian_murphy {
+            background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGYWQ8IQbhg8VYYJ6fiz4r7Kw_adwCZJq2YVX9ZF8hXQ&s=10");
+        }
+
+        .robert_downey_jr {
+            background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeLgJOCzeHcfPDC2JUaUv0FE-Mg8xOKv05B4aY_dWrGQ&s");
+        }
+
+        .florence_pugh {
+            background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgih2KoYDlN_Yr2TyiZ9ougVt60x9EQYsh_jHLvaRB5VmUks9JoUtHE3PiFGhdA6Ef3sDWgxprVGWq1qsB0-JPZ2iMSose0menY0kQThh4mQ&s=10");
+        }
+
+        .matt_damon {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYelUaIo8iB4c2n3lK23qDo5qw2TC1SQ1Hz0eFvvg6JEb7VdMGxTqlo-YHTg8d435cZl8lMG5mYv6ROtK4hxGFOeXu5i4Ygv-Ch3uyyUW8&s=10');
+        }
+
+        .emily_blunt {
+            background-image: url('https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTpK8RV1Uo7xMfSaXFu8SklKjMDAssMxP-tyFevw-nMAO-ywJjAPUVshFhdWMjLaciGSZIHp_lvwxn-EntJP4HEfKJlGyzp3z0f0QyLYOSxXPONBDhDlBmuo7WVPdp0VeV7eqlgp2EJLLmu&s=19');
+        }
+
+        .kenneth_branagh {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlh0PXq3Vb-Mjqv78vtxVzzhx0idMf0ohOelPgpX-dRIMiH_JkoYcaDQ9t1NmcnbpGGcOC1uLeSdWiiOc4JEIf-kaOOlm-NL2aJifk-LNQ&s=10');
+        }
+
+        .benny_safdie {
+            background-image: url('https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTZBtdAg0MN6TO7oCn3XzA8CN68Zd9pCZFdB6S5Eqf1ogRRKrpBDK087HG5tod7Bv6Znzdkd3wBinJR0kUZFbqDNLFvYkaMbT4AdlxuW24VGQ7kFIdwhUOdwejV5EZp2_co6RLx5z01dBs&s=19');
+        }
+
+        .class_section {
+            position: absolute;
+            top: 100px;
+        }
+
+        /* =========================================================
+   BEHIND THE SCENES VIDEO
+   Styled similar to Section 2 trailer card
+========================================================= */
+
+        .behind-trailer {
+            width: 100%;
+        }
+
+
+        .behind-video-card {
+            position: relative;
+
+            width: 100%;
+            aspect-ratio: 16 / 9;
+
+            overflow: hidden;
+
+            border: 1px solid #333;
+            border-radius: 14px;
+
+            background: #111;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.6);
+
+            transition:
+                transform 0.35s ease,
+                border-color 0.35s ease;
+        }
+
+
+        .behind-video-card:hover {
+            transform: translateY(-6px);
+
+            border-color: #e67432;
+        }
+
+
+        .behind-video-card img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+
+            display: block;
+
+            transition:
+                transform 0.5s ease,
+                filter 0.5s ease;
+        }
+
+
+        .behind-video-card::after {
+            content: "";
+
+            position: absolute;
+            inset: 0;
+
+            background:
+                linear-gradient(to top,
+                    rgba(0, 0, 0, 0.8),
+                    transparent 55%);
+
+            pointer-events: none;
+        }
+
+
+        .behind-video-card:hover img {
+            transform: scale(1.04);
+
+            filter: brightness(0.75);
+        }
+
+
+        /* PLAY BUTTON */
+
+        .behind-play {
+            position: absolute;
+
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+
+            z-index: 2;
+
+            width: 72px;
+            height: 72px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 2px solid #fff;
+            border-radius: 50%;
+
+            color: #fff;
+
+            font-size: 25px;
+
+            padding-left: 4px;
+
+            background: rgba(0, 0, 0, 0.25);
+
+            backdrop-filter: blur(5px);
+
+            transition:
+                background 0.3s ease,
+                border-color 0.3s ease,
+                transform 0.3s ease;
+        }
+
+
+        .behind-video-card:hover .behind-play {
+            background: #e67432;
+            border-color: #e67432;
+
+            transform:
+                translate(-50%, -50%) scale(1.08);
+        }
+
+
+        /* VIDEO TIME */
+
+        .video-time {
+            position: absolute;
+
+            left: 20px;
+            bottom: 20px;
+
+            z-index: 3;
+
+            color: #ddd;
+
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+        }
+
+
+        /* VIDEO PROGRESS LINE */
+
+        .video-line {
+            position: absolute;
+
+            left: 20px;
+            right: 20px;
+            bottom: 12px;
+
+            z-index: 3;
+
+            height: 2px;
+
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+
+        .video-line span {
+            display: block;
+
+            width: 45%;
+            height: 100%;
+
+            background: #e67432;
+        }
+
+
+        /* =========================================================
+   AWARDS
+========================================================= */
+
+        .awards-section {
+            width: 100%;
+            max-width: 1450px;
+
+            margin: 70px auto 0;
+
+            display: flex;
+            align-items: stretch;
+
+            border-top: 1px solid #2d2d2d;
+            border-bottom: 1px solid #2d2d2d;
+        }
+
+
+        /* LEFT TITLE */
+
+        .awards-heading {
+            width: 180px;
+
+            flex-shrink: 0;
+
+            padding: 25px 25px 25px 0;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            color: #777;
+
+            font-family: Arial, sans-serif;
+
+            font-size: 12px;
+
+            line-height: 1.8;
+
+            letter-spacing: 4px;
+        }
+
+
+        /* AWARDS FLEX CONTAINER */
+
+        .awards-list {
+            flex: 1;
+
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+
+        /* INDIVIDUAL AWARD */
+
+        .award {
+            flex: 1 1 220px;
+
+            min-height: 125px;
+
+            padding: 25px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 18px;
+
+            border-left: 1px solid #2d2d2d;
+
+            transition:
+                background 0.3s ease;
+        }
+
+
+        .award:hover {
+            background: rgba(230, 116, 50, 0.05);
+        }
+
+
+        /* AWARD ICON */
+
+        .award-icon {
+            width: 42px;
+            height: 42px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #e67432;
+
+            font-size: 30px;
+        }
+
+
+        /* AWARD TEXT */
+
+        .award-info h3 {
+            margin-bottom: 8px;
+
+            color: #e8e8e8;
+
+            font-family: Arial, sans-serif;
+
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+
+        .award-info p {
+            color: #777;
+
+            font-family: Arial, sans-serif;
+
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+
+        /* =========================================================
+   IMAGE GALLERY
+========================================================= */
+
+        .behind-gallery {
+            width: 100%;
+            max-width: 1450px;
+
+            margin: 45px auto 0;
+
+            display: flex;
+
+            gap: 14px;
+
+            overflow-x: auto;
+
+            scrollbar-width: thin;
+            scrollbar-color: #444 transparent;
+        }
+
+
+        /* IMAGE */
+
+        .gallery-card {
+            position: relative;
+
+            flex: 1 1 25%;
+
+            min-width: 220px;
+
+            height: 180px;
+
+            overflow: hidden;
+
+            border-radius: 9px;
+
+            border: 1px solid #292929;
+
+            background: #111;
+        }
+
+
+        .gallery-card.large {
+            flex-basis: 32%;
+        }
+
+
+        .gallery-card img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+
+            display: block;
+
+            filter: grayscale(25%);
+
+            transition:
+                transform 0.5s ease,
+                filter 0.5s ease;
+        }
+
+
+        .gallery-card::after {
+            content: "";
+
+            position: absolute;
+            inset: 0;
+
+            background:
+                linear-gradient(to top,
+                    rgba(0, 0, 0, 0.45),
+                    transparent);
+
+            pointer-events: none;
+        }
+
+
+        .gallery-card:hover img {
+            transform: scale(1.08);
+
+            filter: grayscale(0%);
+        }
+
+
+        /* =========================================================
+   RESPONSIVE
+========================================================= */
+
+        @media (max-width: 1000px) {
+
+            .behind-header {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+
+            .behind-content {
+                max-width: 800px;
+            }
+
+
+            .behind-content h2 {
+                font-size: clamp(45px,
+                        7vw,
+                        70px);
+            }
+
+
+            .awards-section {
+                flex-direction: column;
+            }
+
+
+            .awards-heading {
+                width: 100%;
+
+                padding: 20px 0;
+
+                border-bottom: 1px solid #2d2d2d;
+            }
+
+
+            .award {
+                border-top: 0;
+            }
+        }
+
+
+        @media (max-width: 650px) {
+
+            .behind-scenes {
+                padding: 60px 22px;
+            }
+
+
+            .behind-content h2 {
+                font-size: 30px;
+                letter-spacing: -1px;
+            }
+
+
+            .behind-content p {
+                font-size: 15px;
+            }
+
+
+            .behind-video-card {
+                aspect-ratio: 16 / 10;
+            }
+
+
+            .behind-play {
+                width: 60px;
+                height: 60px;
+            }
+
+
+            .awards-list {
+                flex-direction: column;
+            }
+
+
+            .award {
+                min-height: 105px;
+
+                border-left: 0;
+                border-top: 1px solid #2d2d2d;
+
+                padding: 20px 5px;
+            }
+
+
+            .behind-gallery {
+                gap: 10px;
+            }
+
+
+            .gallery-card {
+                min-width: 250px;
+                height: 160px;
+            }
+        }
+
+        /* =========================================================
+   MOBILE RESPONSIVE (phones only - desktop is unchanged)
+   Screen 1: half-height hero image + title, then movie details
+   Then scroll: trailers, cast, behind the scenes
+========================================================= */
+        @media (max-width: 768px) {
+
+            /* Natural scrolling instead of full-screen snapping */
+            html {
+                scroll-snap-type: none;
+            }
+
+            section {
+                height: auto;
+                scroll-snap-align: none;
+            }
+
+            /* ---------- HERO: half of the screen ---------- */
+            .hero {
+                height: 50vh;
+                height: 50dvh;
+            }
+
+            /* keeps the same fade-up image animation, just crops for mobile */
+            .hero::before {
+                background-position: 60% center;
+            }
+
+            /* same fadeUp animation, scaled to fit a phone */
+            .title {
+                left: 5vw;
+                bottom: 14px;
+                font-size: 10vw;
+                letter-spacing: 1.5px;
+                white-space: nowrap;
+            }
+
+            .director-credit {
+                left: 5vw;
+                right: 5vw;
+                bottom: calc(10vw + 34px);
+                text-align: left;
+                font-size: 11px;
+                margin-bottom: 0;
+            }
+
+            .director-credit span {
+                font-size: 1.3em;
+            }
+
+            .back {
+                top: 14px;
+                left: 14px;
+                padding: 7px 14px;
+                font-size: 14px;
+            }
+
+            /* ---------- MOVIE DETAILS (below the half image) ---------- */
+            .info {
+                height: auto;
+            }
+
+            .movie-section {
+                height: auto;
+                min-height: 0;
+                justify-content: flex-start;
+                padding: 28px 20px 30px;
+                gap: 28px;
+            }
+
+            .movie-main-content {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            /* hero image already acts as the poster on mobile */
+            .poster {
+                display: none;
+            }
+
+            .movie-details {
+                gap: 14px;
+                width: 100%;
+            }
+
+            .movie-title {
+                font-size: 38px;
+            }
+
+            .genre-line {
+                font-size: 11px;
+                letter-spacing: 2px;
+            }
+
+            .pill {
+                padding: 5px 11px;
+                font-size: 13px;
+            }
+
+            .overview {
+                max-width: 100%;
+                font-size: 15px;
+                line-height: 1.55;
+            }
+
+            .cast_lan {
+                font-size: 15px;
+            }
+
+            .cast_lan ul {
+                flex-wrap: wrap;
+                gap: 4px 8px;
+            }
+
+            .language-text {
+                font-size: 15px;
+            }
+
+            .button-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                margin-top: 6px;
+            }
+
+            .watch_now {
+                text-align: center;
+                padding: 13px 24px;
+                font-size: 16px;
+            }
+
+            .caution {
+                font-size: 13px;
+                text-align: center;
+            }
+
+            /* ---------- TRAILERS: third card removed on mobile only ---------- */
+            .trailer-gallery .card:nth-child(3) {
+                display: none;
+            }
+
+            .trailer-gallery {
+                gap: 12px;
+            }
+
+            .card {
+                max-width: none;
+                height: 120px;
+            }
+
+            .popup iframe {
+                width: 94%;
+                height: auto;
+                aspect-ratio: 16 / 9;
+            }
+
+            .close {
+                top: 14px;
+                right: 18px;
+                font-size: 34px;
+            }
+
+            /* ---------- CAST ---------- */
+            #cast {
+                height: auto;
+                padding: 40px 20px;
+            }
+
+            .cast-section h2 {
+                font-size: 24px;
+                margin-bottom: 14px;
+            }
+
+            .cast {
+                gap: 14px;
+                padding: 10px 0 16px;
+            }
+
+            .cast-card {
+                width: 110px;
+            }
+
+            .cast-photo {
+                height: 160px;
+                width: 110px;
+            }
+
+            /* ---------- BEHIND THE SCENES ---------- */
+            .four {
+                padding: 0;
+            }
+        }
+    </style><!-- Link to your external stylesheet here -->
+</head>
+
+<body>
+
+    <!-- 1. LOADING EFFECT SPLIT PANELS -->
+    <div class="split-overlay" id="splitOverlay">
+        <div class="panel left"></div>
+        <div class="panel right"></div>
+    </div>
+
+    <!-- 2. SECTION 1: HERO LANDING PAGE -->
+    <section class="hero">
+        <a href="index.html" class="back"> ← Back</a>
+        <p class="director-credit">
+            A FILM BY <span>CHRISTOPHER NOLAN</span>
+        </p>
+        <h1 class="title">OPPENHEIMER</h1>
+    </section>
+
+    <!-- 3. SECTION 2: MOVIE PROFILE INFO -->
+    <section class="info">
+        <div class="movie-section">
+
+            <!-- Core Content Info Wrapper -->
+            <div class="movie-main-content">
+                <img class="poster" src="poster_opennheimer.jpg" alt="Oppenheimer Poster">
+
+                <div class="movie-details">
+                    <h2 class="movie-title">Oppenheimer</h2>
+                    <div class="genre-line">BIOGRAPHY &middot; DRAMA &middot; HISTORY</div>
+                    <div class="info-pills">
+                        <span class="pill">2023</span>
+                        <span class="pill">3H 00M</span>
+                        <span class="pill">IMDb 8.4</span>
+                        <span class="pill">R</span>
+                    </div>
+
+                    <!-- <div class="genre_rating">
+                        <div class="rating">
+                            <span>📅 2023</span>
+                            <span>🕛 3h 00m</span>
+                            <span>⭐ 8.4</span>
+                        </div>
+                    </div> -->
+
+                    <!-- <p class="overview">
+                        During World War II, Lt. Gen. Leslie Groves Jr. appoints physicist J. Robert Oppenheimer to
+                        work on the top-secret Manhattan Project. Oppenheimer and a team of scientists spend years
+                        developing and
+                        designing the atomic bomb. Their work comes to fruition on July 16, 1945, as they witness the
+                        world's first
+                        nuclear explosion, forever changing the course of history.
+                    </p> -->
+                    <blockquote class="overview">
+                        At the height of World War II, theoretical physicist J. Robert Oppenheimer is chosen to lead a
+                        secret laboratory in Los Alamos. His work changes warfare forever—and leaves him confronting the
+                        political and moral fallout of the world he helped create.
+                    </blockquote>
+
+                    <div class="cast_lan_wrapper">
+                        <div class="cast_lan">
+                            <ul>
+                                <li><strong>Cast:</strong> Cillian Murphy,</li>
+                                <li>Emily Blunt,</li>
+                                <li>Robert Downey Jr.,</li>
+                                <li>Florence Pugh...</li>
+                                <li><a href="#cast">view more</a></li>
+                            </ul>
+                        </div>
+                        <h3 class="language-text">Language: Dual Audio (English, Hindi)</h3>
+                    </div>
+
+                    <div class="button-group">
+                        <a class="watch_now"
+                            href="https://drive.google.com/file/d/1SDW6xxsL41duRl7l6hnDzppFAg9rA934/view?usp=sharing"
+                            onclick="openDrive(event)">▶ Watch Now</a>
+                        <p class="caution">Dual Audio is available when you download the movie</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Gallery Grid Row -->
+            <div class="trailer-gallery">
+                <div class="card" onclick="openVideo('uYPbbksJxIg')">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnEUzeFWNcQE5e5OLLtLdl-BP3CoTh6LFtGv-AQ7bmMA&s=10.jpg"
+                        alt="Official Trailer">
+                    <div class="play">▶</div>
+                </div>
+                <div class="card" onclick="openVideo('bK6ldnjE3Y0')">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROqvoArWzEa58Fjx05MNmIGakdn3EvUqCYNecNKe74Gg&s=10"
+                        alt="Trailer Clip 2">
+                    <div class="play">▶</div>
+                </div>
+                <div class="card" onclick="openVideo('tK0IDmSYYGk')">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgRZyw5TKYI2-qHC4fyTFga3czfon76EVJ7g2oIANcvA&s=10"
+                        alt="Trailer Clip 3">
+                    <div class="play">▶</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Video Modal Lightbox Overlay -->
+        <div class="popup" id="popup">
+            <span class="close" onclick="closeVideo()">✖</span>
+            <iframe id="player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+    </section>
+
+    <!-- 4. SECTION 3: CAST LIST SLIDER -->
+    <section id="cast">
+        <div class="cast-section">
+            <h2>Cast:</h2>
+            <div class="cast">
+
+                <a class="cast-card" href="https://www.google.com/search?q=cillian+murphy" target="_blank">
+                    <div class="cast-photo cillian_murphy"></div>
+                    <div class="cast-name">Cillian Murphy</div>
+                    <div class="cast-role">J. Robert Oppenheimer</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=robert+downey+jr" target="_blank">
+                    <div class="cast-photo robert_downey_jr"></div>
+                    <div class="cast-name">Robert Downey Jr.</div>
+                    <div class="cast-role">Lewis Strauss</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=florence+pugh" target="_blank">
+                    <div class="cast-photo florence_pugh"></div>
+                    <div class="cast-name">Florence Pugh</div>
+                    <div class="cast-role">Jean Tatlock</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=matt+damon" target="_blank">
+                    <div class="cast-photo matt_damon"></div>
+                    <div class="cast-name">Matt Damon</div>
+                    <div class="cast-role">Leslie Groves</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=emily+blunt" target="_blank">
+                    <div class="cast-photo emily_blunt"></div>
+                    <div class="cast-name">Emily Blunt</div>
+                    <div class="cast-role">Kitty Oppenheimer</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=kenneth+branagh" target="_blank">
+                    <div class="cast-photo kenneth_branagh"></div>
+                    <div class="cast-name">Kenneth Branagh</div>
+                    <div class="cast-role">Niels Bohr</div>
+                </a>
+                <a class="cast-card" href="https://www.google.com/search?q=benny+safdie" target="_blank">
+                    <div class="cast-photo benny_safdie"></div>
+                    <div class="cast-name">Benny Safdie</div>
+                    <div class="cast-role">Edward Teller</div>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. SECTION 4: BEHIND THE SCENES & AWARDS -->
+    <section class="four">
+
+        <!-- =========================================================
+     SECTION 4 — BEHIND THE SCENES + AWARDS + GALLERY
+========================================================= -->
+
+        <section class="behind-scenes">
+
+            <!-- Main Behind The Scenes -->
+            <div class="behind-header">
+
+                <div class="behind-content">
+
+                    <div class="small-heading">
+                        <span></span>
+                        BEHIND THE SCENES
+                    </div>
+
+                    <h2>
+                        The Making of a
+                        <br>
+                        Modern Classic
+                    </h2>
+
+                    <p>
+                        From real locations to meticulous set design,
+                        explore how Christopher Nolan and his team brought
+                        Oppenheimer to life. Discover the filmmaking,
+                        performances and creative decisions behind one
+                        of the most acclaimed films of its generation.
+                    </p>
+
+                </div>
+
+
+                <!-- Same type of trailer card as Section 2 -->
+                <div class="behind-trailer">
+
+                    <div class="behind-video-card" onclick="openVideo('YOUR_VIDEO_ID')">
+
+                        <img src="behind-scenes-thumbnail.jpg" alt="Oppenheimer Behind The Scenes">
+
+                        <div class="behind-play">
+                            ▶
+                        </div>
+
+                        <div class="video-time">
+                            2:34 / 5:28
+                        </div>
+
+                        <div class="video-line">
+                            <span></span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================================
+         AWARDS
+    ====================================================== -->
+
+            <div class="awards-section">
+
+                <div class="awards-heading">
+                    <span>AWARDS &</span>
+                    <span>RECOGNITION</span>
+                </div>
+
+
+                <div class="awards-list">
+
+                    <!-- Oscar -->
+                    <div class="award">
+
+                        <div class="award-icon">
+                            ★
+                        </div>
+
+                        <div class="award-info">
+                            <h3>7 Academy Awards</h3>
+
+                            <p>
+                                Including Best Picture,
+                                Best Director and Best Actor
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <!-- BAFTA -->
+                    <div class="award">
+
+                        <div class="award-icon">
+                            ◆
+                        </div>
+
+                        <div class="award-info">
+                            <h3>7 BAFTA Awards</h3>
+
+                            <p>
+                                Including Best Film,
+                                Best Director and Best Actor
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Golden Globes -->
+                    <div class="award">
+
+                        <div class="award-icon">
+                            ✦
+                        </div>
+
+                        <div class="award-info">
+                            <h3>5 Golden Globes</h3>
+
+                            <p>
+                                Best Motion Picture – Drama,
+                                Best Director and Best Actor
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Critics Choice -->
+                    <div class="award">
+
+                        <div class="award-icon">
+                            ◎
+                        </div>
+
+                        <div class="award-info">
+                            <h3>8 Critics Choice Awards</h3>
+
+                            <p>
+                                Including Best Picture,
+                                Best Director and Best Supporting Actor
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================================
+         BEHIND THE SCENES IMAGE GALLERY
+    ====================================================== -->
+
+            <div class="behind-gallery">
+
+                <div class="gallery-card large">
+                    <img src="behind1.jpg" alt="Oppenheimer behind the scenes">
+                </div>
+
+                <div class="gallery-card">
+                    <img src="behind2.jpg" alt="Oppenheimer film set">
+                </div>
+
+                <div class="gallery-card">
+                    <img src="behind3.jpg" alt="Oppenheimer production">
+                </div>
+
+                <div class="gallery-card">
+                    <img src="behind4.jpg" alt="Oppenheimer camera setup">
+                </div>
+
+            </div>
+
+        </section>
+    </section>
+
+    </section>
+
+    <!-- 6. RUNTIME CONTROL SCRIPTS -->
+
+    <script>
+        // Opening curtain load transitions
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('splitOverlay').classList.add('open');
+            }, 300);
+        });
+        const popup = document.getElementById("popup");
+        const player = document.getElementById("player");
+
+        function openVideo(videoId) {
+
+            popup.style.display = "flex";
+
+            player.src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
+
+        }
+
+        function closeVideo() {
+
+            popup.style.display = "none";
+
+            player.src = "";
+
+        }
+
+        popup.onclick = function (e) {
+
+            if (e.target === popup) {
+
+                closeVideo();
+
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>
