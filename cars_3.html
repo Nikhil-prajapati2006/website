@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cars_3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+   1. RESET & BASE STYLES
+   ========================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+ 
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+        }
+ 
+        body {
+            overflow-y: scroll;
+            background: #000;
+            color: white;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+ 
+        /* Global Typography & Resets */
+        ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+        }
+ 
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+ 
+        /* Global Section Snap Setting */
+        section {
+            height: 100vh;
+            scroll-snap-align: start;
+            scroll-snap-stop: normal;
+        }
+ 
+        /* ==========================================================================
+   2. NAVIGATION & OVERLAYS (SHARED)
+   ========================================================================== */
+        .back {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 18px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 2.3vh;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            transition: 0.3s;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            z-index: 10;
+        }
+ 
+        .back:hover {
+            background: #e50914;
+            border-color: #e50914;
+            transform: translateY(-2px);
+        }
+ 
+        /* Split reveal effect — plays once on page load */
+        .split-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+        }
+ 
+        .split-overlay .panel {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: #000;
+            transition: transform 1.3s ease;
+        }
+ 
+        .split-overlay .panel.left {
+            left: 0;
+        }
+ 
+        .split-overlay .panel.right {
+            right: 0;
+        }
+ 
+        .split-overlay.open .panel.left {
+            transform: translateX(-100%);
+        }
+ 
+        .split-overlay.open .panel.right {
+            transform: translateX(100%);
+        }
+ 
+ 
+        /* ==========================================================================
+   3. SECTION 1: HERO LANDING PAGE (UNTOUCHED)
+   ========================================================================== */
+        .info-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+ 
+        .pill {
+            padding: 6px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 6px;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            color: #e8e8e8;
+        }
+ 
+        .hero {
+            position: relative;
+            overflow: hidden;
+            scroll-snap-stop: always;
+        }
+ 
+        .hero-img {
+            display: none;
+        }
+ 
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url('cars_3.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: translateY(80px);
+            animation: fadeInUp 1.3s ease-out forwards;
+        }
+ 
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(80px);
+            }
+ 
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+ 
+ 
+ 
+        .title {
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            z-index: 2;
+            position: absolute;
+            /* left: 50vw; */
+             right: 50vw; 
+            bottom: 6vh;
+            text-align: center;
+            font-size: clamp(50px, 7.5vw, 140px);
+            white-space: nowrap;
+            font-weight: 600;
+            letter-spacing: 0.22em;
+            padding-left: 0.22em;
+            line-height: 1;
+            color: #fff;
+            text-shadow: 0 6px 30px rgba(0, 0, 0, 0.65);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1.3s ease forwards;
+            animation-delay: 1.3s;
+        }
+ 
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background: linear-gradient(to top, rgba(6, 12, 32, 0.85) 0%, rgba(6, 12, 32, 0.25) 40%, transparent 65%);
+        }
+ 
+        @import url('https://googleapis.com');
+ 
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+ 
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+ 
+        .director-credit {
+            font-family: 'Libre Franklin', sans-serif;
+            font-weight: 300;
+            font-size: clamp(0.85rem, 1.2vw, 1.05rem);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #e8e4dc;
+            text-align: center;
+            margin-bottom: 1rem;
+            z-index: 2;
+            position: absolute;
+            bottom: 160px;
+            left: 550px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1.8s ease-out forwards;
+            animation-delay: 1.3s;
+        }
+ 
+        .director-credit span {
+            font-weight: 600;
+            font-size: 1.5em;
+            letter-spacing: 0.04em;
+            color: #fff;
+            margin-left: 0.4em;
+        }
+ 
+        @media (max-width: 768px) {
+            .hero p {
+                font-size: 3vh;
+            }
+        }
+ 
+ 
+        /* ==========================================================================
+   4. SECTION 2: MOVIE INFO (RE-DESIGNED PREMIUM CINEMATIC BACKGROUND)
+   ========================================================================== */
+        .movie-section {
+            /* Changed from purple gradient to deep cinematic obsidian charcoal with clean vignette shading */
+            background: linear-gradient(135deg, #12306e 0%, #0a1a40 45%, #000000 100%);
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 80px;
+            box-sizing: border-box;
+            gap: 25px;
+        }
+ 
+        .movie-section::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 6px;
+            background: repeating-linear-gradient(90deg, #ffc82e 0 40px, transparent 40px 70px);
+            opacity: 0.85;
+        }
+ 
+        .genre-line {
+            color: #9a9a9a;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+ 
+        /* Horizontal layout structures */
+        .movie-main-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 40px;
+            max-width: 1400px;
+            width: 100%;
+        }
+ 
+        .poster {
+            height: 370px;
+            width: 260px;
+            border-radius: 20px;
+            object-fit: cover;
+            flex-shrink: 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+        }
+ 
+        .movie-details {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            justify-content: center;
+        }
+ 
+        .movie-title {
+            font-size: 58px;
+            font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+            font-weight: 400;
+            color: #f1ede4;
+            letter-spacing: 1px;
+            line-height: 1.05;
+        }
+ 
+        .genre_rating {
+            display: flex;
+            align-items: center;
+            color: rgb(255, 255, 255);
+            font-size: 16px;
+            font-weight: 510;
+            font-family: sans-serif;
+        }
+ 
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+ 
+       
+ 
+        .overview {
+            max-width: 620px;
+            font-size: 17px;
+            line-height: 1.6;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            font-family: Arial, sans-serif;
+            border-left: 3px solid #ffc82e;
+            padding-left: 18px;
+        }
+ 
+        .cast_lan_wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+ 
+        .cast_lan_wrapper h2 {
+            font-size: 20px;
+        }
+ 
+        .cast_lan a {
+            color: rgb(191, 186, 186);
+            transition: color 0.2s;
+        }
+ 
+        .cast_lan {
+            font-size: 19px;
+        }
+ 
+        .cast_lan a:hover {
+            color: #fff;
+ 
+        }
+ 
+        .language-text {
+            color: #fff;
+            font-size: 19px;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+ 
+        /* Action button configurations */
+        .button-group {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+ 
+        .watch_now {
+            padding: 10px 24px;
+            color: white;
+            border-radius: 11px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid rgb(217, 30, 38);
+            background-color: rgb(217, 30, 38);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+ 
+        .watch_now:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(217, 30, 38, 0.45);
+        }
+ 
+        .caution {
+            color: #ff3838;
+            font-size: 15px;
+            font-weight: 500;
+        }
+ 
+       
+        .trailer-gallery {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            margin-top: 0;
+        }
+ 
+        .card {
+            flex: 1;
+            max-width: 320px;
+            height: 175px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+        }
+ 
+        .card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.15) 45%, transparent 70%);
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+ 
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 200, 46, 0.5);
+            border-color: #ffc82e;
+        }
+ 
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease, filter 0.5s ease;
+        }
+ 
+        .card:hover img {
+            transform: scale(1.08);
+            filter: brightness(0.75);
+        }
+ 
+        .card-caption {
+            position: absolute;
+            left: 16px;
+            bottom: 14px;
+            z-index: 2;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+ 
+        .card:hover .card-caption {
+            color: #ffe28a;
+        }
+ 
+        .play {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            z-index: 2;
+            width: 34px;
+            height: 34px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1.5px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 13px;
+            padding-left: 2px;
+            backdrop-filter: blur(4px);
+            transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+        }
+ 
+        .card:hover .play {
+            background: #d91e26;
+            border-color: #d91e26;
+            transform: scale(1.1);
+        }
+ 
+        /* Video popups overlays */
+        .popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+ 
+        .popup iframe {
+            width: 80%;
+            height: 80%;
+            border: none;
+            border-radius: 10px;
+        }
+ 
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 45px;
+            color: white;
+            cursor: pointer;
+        }
+ 
+ 
+        /* ==========================================================================
+   5. SECTION 3: CAST STYLES & PICTURE REGISTRATION
+   ========================================================================== */
+        #cast {
+            background: linear-gradient(180deg, #0a1a40 0%, #000000 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 80px;
+        }
+ 
+        .cast-section {
+            width: 100%;
+            max-width: 1400px;
+        }
+ 
+        .cast-section h2 {
+            font-size: 32px;
+            margin-bottom: 25px;
+            font-family: 'Libre Franklin', sans-serif;
+            letter-spacing: 1px;
+        }
+ 
+        .cast {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 25px;
+            overflow-x: auto;
+            padding: 10px 5px 20px;
+        }
+ 
+        .cast::-webkit-scrollbar {
+            height: 6px;
+        }
+ 
+        .cast::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+        }
+ 
+ 
+ 
+        .cast {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 10px 2vw 20px;
+        }
+ 
+        .cast-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 130px;
+            flex-shrink: 0;
+            cursor: pointer;
+            text-decoration: none;
+        }
+ 
+        .cast-photo {
+            height: 190px;
+            width: 130px;
+            border-radius: 10px;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+ 
+        .cast-card:hover .cast-photo {
+            border-color: #ffc82e;
+            transform: scale(1.05);
+        }
+ 
+        .cast-name {
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+            margin-top: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+            font-family: sans-serif;
+        }
+ 
+        .cast-role {
+            margin-top: 3px;
+            font-size: 13px;
+            color: gray;
+            text-align: center;
+            font-family: sans-serif;
+        }
+ 
+        .owen_wilson{
+            background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQITsRd4tFi4joDDOIsBspX0a8gipuErmPS1-xz1cQu0-CaoxMQrPPWHTQ3hyxAerPWZy9c6n02PYN4ccrL9lnfbQV1DdVI2t9H5TeaEkk&s");
+        }
+ 
+        .nathan_fillion {
+            background-image: url("https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcQKE53eBY6bXN6sug-DUiwNjbpux2jIgwDM_rbIS0sueepZLpAK95DJEN7RMKlMWdTNIeM2juOM8O4pOMfq8bn_6BC4xXUB87z7shB96SJRLhkkyn9_spJEyxmx9povTI2MLwcMLhRso0U&s=19");
+        }
+ 
+        .florence_pugh {
+            background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgih2KoYDlN_Yr2TyiZ9ougVt60x9EQYsh_jHLvaRB5VmUks9JoUtHE3PiFGhdA6Ef3sDWgxprVGWq1qsB0-JPZ2iMSose0menY0kQThh4mQ&s=10");
+        }
+ 
+        .matt_damon {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYelUaIo8iB4c2n3lK23qDo5qw2TC1SQ1Hz0eFvvg6JEb7VdMGxTqlo-YHTg8d435cZl8lMG5mYv6ROtK4hxGFOeXu5i4Ygv-Ch3uyyUW8&s=10');
+        }
+ 
+        .emily_blunt {
+            background-image: url('https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTpK8RV1Uo7xMfSaXFu8SklKjMDAssMxP-tyFevw-nMAO-ywJjAPUVshFhdWMjLaciGSZIHp_lvwxn-EntJP4HEfKJlGyzp3z0f0QyLYOSxXPONBDhDlBmuo7WVPdp0VeV7eqlgp2EJLLmu&s=19');
+        }
+ 
+        .kenneth_branagh {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlh0PXq3Vb-Mjqv78vtxVzzhx0idMf0ohOelPgpX-dRIMiH_JkoYcaDQ9t1NmcnbpGGcOC1uLeSdWiiOc4JEIf-kaOOlm-NL2aJifk-LNQ&s=10');
+        }
+ 
+        .benny_safdie {
+            background-image: url('https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTZBtdAg0MN6TO7oCn3XzA8CN68Zd9pCZFdB6S5Eqf1ogRRKrpBDK087HG5tod7Bv6Znzdkd3wBinJR0kUZFbqDNLFvYkaMbT4AdlxuW24VGQ7kFIdwhUOdwejV5EZp2_co6RLx5z01dBs&s=19');
+        }
+ 
+        .class_section {
+            position: absolute;
+            top: 100px;
+        }
+ 
+        /* =========================================================
+   SECTION 4 - RACE TO THE FINISH (tap to rev, beat two rivals)
+========================================================= */
+        .race {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+            background: #14091f;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+ 
+        #raceCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+ 
+        .race-top {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 0 20px;
+            pointer-events: none;
+        }
+ 
+        .race-label {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 6px;
+            color: #ffc82e;
+        }
+ 
+        .race-title {
+            margin: 10px 0 8px;
+            font-family: 'Montserrat', 'Segoe UI', sans-serif;
+            font-size: clamp(34px, 4.6vw, 60px);
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            line-height: 1.05;
+            color: #fff;
+            text-shadow: 0 3px 0 #d91e26;
+        }
+ 
+        .race-hint {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            letter-spacing: 1px;
+            color: #ffe9c4;
+            transition: opacity 0.4s ease;
+            animation: hintPulse 2s ease-in-out infinite;
+        }
+ 
+        .race-hint.quiet {
+            animation: none;
+            opacity: 0.8;
+        }
+ 
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+ 
+        .race-bottom {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 16px 40px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            border-top: 3px solid #ffc82e;
+            background: linear-gradient(to top, rgba(12, 6, 10, 0.95), rgba(12, 6, 10, 0.6));
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #b9a79b;
+            pointer-events: none;
+        }
+ 
+        .race-stat strong {
+            font-family: 'Montserrat', 'Segoe UI', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffe28a;
+            margin-right: 4px;
+        }
+ 
+        .race-pos {
+            flex: 1;
+            text-align: center;
+            font-size: 14px;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+ 
+        .race-reset {
+            pointer-events: auto;
+            padding: 8px 18px;
+            border: 1px solid #d91e26;
+            border-radius: 30px;
+            background: transparent;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.25s ease, transform 0.25s ease;
+        }
+ 
+        .race-reset:hover {
+            background: #d91e26;
+            transform: translateY(-2px);
+        }
+ 
+        .race-links {
+            display: flex;
+            gap: 22px;
+            pointer-events: auto;
+        }
+ 
+        .race-links a {
+            color: #b9a79b;
+            transition: color 0.25s ease;
+        }
+ 
+        .race-links a:hover {
+            color: #ffc82e;
+        }
+ 
+        /* =========================================================
+   MOBILE RESPONSIVE (phones only - desktop is unchanged)
+   Screen 1: half-height hero image + title, then movie details
+   Then scroll: trailers, cast, behind the scenes
+========================================================= */
+        @media (max-width: 768px) {
+ 
+            /* Natural scrolling instead of full-screen snapping */
+            html {
+                scroll-snap-type: none;
+            }
+ 
+            section {
+                height: auto;
+                scroll-snap-align: none;
+            }
+ 
+            /* ---------- HERO: half of the screen ---------- */
+            .hero {
+                height: auto;
+                background: #000;
+            }
+ 
+            /* phone: show the whole image (no crop), height follows the image */
+            .hero::before {
+                display: none;
+            }
+ 
+            .hero-img {
+                display: block;
+                width: 100%;
+                height: auto;
+                opacity: 0;
+                transform: translateY(40px);
+                animation: fadeInUp 1.3s ease-out forwards;
+            }
+ 
+            /* split-reveal curtain: only covers the hero image, not the full page */
+            .split-overlay {
+                position: fixed;
+                inset: 0;
+            }
+ 
+            /* same layout as laptop: title bottom-left, credit above it on the right */
+            .title {
+                left: 0;
+                right: 0;
+                bottom: 3vw;
+                text-align: center;
+                font-size: 14vw;
+                letter-spacing: 0.2em;
+                padding-left: 0.2em; /* balances trailing letter-spacing so it is truly centered */
+                line-height: 1.1;
+                white-space: nowrap;
+            }
+ 
+            /* centered, just above the title, half the title's size */
+            .hero .director-credit {
+                left: 0;
+                right: 0;
+                bottom: calc(8.8vw + 12px);
+                text-align: center;
+                font-size: 4vw;
+                letter-spacing: 0.1em;
+                margin-bottom: 0;
+                white-space: nowrap;
+            }
+ 
+            .hero .director-credit span {
+                font-size: 1em;
+                margin-left: 0.3em;
+            }
+ 
+            .back {
+                top: 14px;
+                left: 14px;
+                padding: 7px 14px;
+                font-size: 14px;
+            }
+ 
+            /* ---------- MOVIE DETAILS (below the half image) ---------- */
+            .info {
+                height: auto;
+            }
+ 
+            .movie-section {
+                height: auto;
+                min-height: 0;
+                justify-content: flex-start;
+                padding: 28px 20px 30px;
+                gap: 28px;
+            }
+ 
+            .movie-main-content {
+                flex-direction: column;
+                gap: 0;
+            }
+ 
+            /* hero image already acts as the poster on mobile */
+            .poster {
+                display: none;
+            }
+ 
+            .movie-details {
+                gap: 14px;
+                width: 100%;
+            }
+ 
+            .movie-title {
+                font-size: 38px;
+            }
+ 
+            .genre-line {
+                font-size: 11px;
+                letter-spacing: 2px;
+            }
+ 
+            .pill {
+                padding: 5px 11px;
+                font-size: 13px;
+            }
+ 
+            .overview {
+                max-width: 100%;
+                font-size: 15px;
+                line-height: 1.55;
+            }
+ 
+            .cast_lan {
+                font-size: 15px;
+            }
+ 
+            .cast_lan ul {
+                flex-wrap: wrap;
+                gap: 4px 8px;
+            }
+ 
+            .language-text {
+                font-size: 15px;
+            }
+ 
+            .button-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                margin-top: 6px;
+            }
+ 
+            .watch_now {
+                text-align: center;
+                padding: 13px 24px;
+                font-size: 16px;
+            }
+ 
+            .caution {
+                font-size: 13px;
+                text-align: center;
+            }
+ 
+            /* ---------- TRAILERS: third card removed on mobile only ---------- */
+            .trailer-gallery .card:nth-child(3) {
+                display: none;
+            }
+ 
+            .trailer-gallery {
+                gap: 12px;
+            }
+ 
+            .card {
+                max-width: none;
+                height: 120px;
+            }
+ 
+            .popup iframe {
+                width: 94%;
+                height: auto;
+                aspect-ratio: 16 / 9;
+            }
+ 
+            .close {
+                top: 14px;
+                right: 18px;
+                font-size: 34px;
+            }
+ 
+            /* ---------- CAST ---------- */
+            #cast {
+                height: auto;
+                padding: 40px 20px;
+            }
+ 
+            .cast-section h2 {
+                font-size: 24px;
+                margin-bottom: 14px;
+            }
+ 
+            .cast {
+                gap: 14px;
+                padding: 10px 0 16px;
+            }
+ 
+            .cast-card {
+                width: 110px;
+            }
+ 
+            .cast-photo {
+                height: 160px;
+                width: 110px;
+            }
+ 
+            /* ---------- LAST SECTION: race ---------- */
+            .race {
+                height: auto;
+                min-height: 82vh;
+                min-height: 82svh;
+            }
+ 
+            .race-top {
+                top: 64px;
+            }
+ 
+            .race-label {
+                font-size: 11px;
+                letter-spacing: 4px;
+            }
+ 
+            .race-hint {
+                font-size: 13px;
+            }
+ 
+            .race-bottom {
+                padding: 12px 20px 16px;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+ 
+            .race-pos {
+                order: 3;
+                flex-basis: 100%;
+            }
+ 
+            .race-links {
+                width: 100%;
+                justify-content: center;
+                gap: 26px;
+                order: 4;
+            }
+        }
+    </style><!-- Link to your external stylesheet here -->
+</head>
+ 
+<body>
+ 
+    <!-- 1. LOADING EFFECT SPLIT PANELS -->
+    <div class="split-overlay" id="splitOverlay">
+        <div class="panel left"></div>
+        <div class="panel right"></div>
+    </div>
+ 
+    <!-- 2. SECTION 1: HERO LANDING PAGE -->
+    <section class="hero">
+        <a href="index.html" class="back"> ← Back</a>
+        <!-- <p class="director-credit">
+            A FILM BY <span>CHRISTOPHER NOLAN</span>
+        </p> -->
+        <img class="hero-img" src="cars1.png" alt="Cars">
+        <h1 class="title">CARS 3</h1>
+    </section>
+ 
+    <!-- 3. SECTION 2: MOVIE PROFILE INFO -->
+    <section class="info">
+        <div class="movie-section">
+ 
+            <!-- Core Content Info Wrapper -->
+            <div class="movie-main-content">
+                <img class="poster" src="cars3_poster.jpg" alt="Oppenheimer Poster">
+ 
+                <div class="movie-details">
+                    <h2 class="movie-title">Cars 3</h2>
+                    <div class="genre-line">FAMILY &middot; SPORTS &middot; </div>
+                    <div class="info-pills">
+                        <span class="pill">2017</span>
+                        <span class="pill">1H 42M</span>
+                        <span class="pill">IMDb 6.7</span>
+                        <!-- <span class="pill">R</span> -->
+                    </div>
+ 
+              
+                    <blockquote class="overview">
+                      Lighting McQueen, a legendary racer, is overcome by new generation racers. He sets out to prove that he is the best racer in the world with the help of Cruz Ramirez.
+                    </blockquote>
+ 
+                    <div class="cast_lan_wrapper">
+                        <div class="cast_lan">
+                            <ul>
+                                <li><strong>Cast:</strong> Cillian Murphy,</li>
+                                <li>Emily Blunt,</li>
+                                <li>Robert Downey Jr.,</li>
+                                <li>Florence Pugh...</li>
+                                <li><a href="#cast">view more</a></li>
+                            </ul>
+                        </div>
+                        <h3 class="language-text">Language: Dual Audio (English, Hindi)</h3>
+                    </div>
+ 
+                    <div class="button-group">
+                        <a class="watch_now"
+                            href="https://drive.google.com/file/d/1SDW6xxsL41duRl7l6hnDzppFAg9rA934/view?usp=sharing"
+                            onclick="openDrive(event)">▶ Watch Now</a>
+                        <p class="caution">Dual Audio is available when you download the movie</p>
+                    </div>
+                </div>
+            </div>
+ 
+            <!-- Preview Gallery Grid Row -->
+            <div class="trailer-gallery">
+                <div class="card" onclick="openVideo('XszNWHhpaTc')">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStDW_PUkJbxLH8pylFeQooRnKO7cG3XJ4xBs3awtweuA&s=10"
+                        alt="Official Trailer">
+                    <div class="play">▶</div>
+                </div>
+                <div class="card" onclick="openVideo('ODk1xDWZ0Ds')">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHgj7SaI2kj6yPPi88UaGm6eeIc-8TqrxnswSPQgOu7w&s=10"
+                        alt="Trailer Clip 2">
+                    <div class="play">▶</div>
+                </div>
+                <div class="card" onclick="openVideo('Y0hdEWXRqCI')">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnDn1CyBg71YRo9gWEYpOc4Jn_5ggOd-KY3KUZXN_I5Q&s=10"
+                        alt="Trailer Clip 3">
+                    <div class="play">▶</div>
+                </div>
+            </div>
+ 
+        </div>
+ 
+        <!-- Video Modal Lightbox Overlay -->
+        <div class="popup" id="popup">
+            <span class="close" onclick="closeVideo()">✖</span>
+            <iframe id="player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+    </section>
+ 
+    <!-- 4. SECTION 3: CAST LIST SLIDER -->
+    <section id="cast">
+        <div class="cast-section">
+            <h2>Cast:</h2>
+            <div class="cast">
+
+                <a class="cast-card" href="https://www.google.com/search?q=owen+wilson" target="_blank">
+                    <div class="cast-photo" data-wiki="Owen_Wilson"></div>
+                    <div class="cast-name">Owen Wilson</div>
+                    <div class="cast-role">Lightning McQueen</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=cristela+alonzo" target="_blank">
+                    <div class="cast-photo" data-wiki="Cristela_Alonzo"></div>
+                    <div class="cast-name">Cristela Alonzo</div>
+                    <div class="cast-role">Cruz Ramirez</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=chris+cooper" target="_blank">
+                    <div class="cast-photo" data-wiki="Chris_Cooper"></div>
+                    <div class="cast-name">Chris Cooper</div>
+                    <div class="cast-role">Smokey</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=armie+hammer" target="_blank">
+                    <div class="cast-photo" data-wiki="Armie_Hammer"></div>
+                    <div class="cast-name">Armie Hammer</div>
+                    <div class="cast-role">Jackson Storm</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=nathan+fillion" target="_blank">
+                    <div class="cast-photo" data-wiki="Nathan_Fillion"></div>
+                    <div class="cast-name">Nathan Fillion</div>
+                    <div class="cast-role">Sterling</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=larry+the+cable+guy" target="_blank">
+                    <div class="cast-photo" data-wiki="Larry_the_Cable_Guy"></div>
+                    <div class="cast-name">Larry the Cable Guy</div>
+                    <div class="cast-role">Mater</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=kerry+washington" target="_blank">
+                    <div class="cast-photo" data-wiki="Kerry_Washington"></div>
+                    <div class="cast-name">Kerry Washington</div>
+                    <div class="cast-role">Natalie Certain</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=bonnie+hunt" target="_blank">
+                    <div class="cast-photo" data-wiki="Bonnie_Hunt"></div>
+                    <div class="cast-name">Bonnie Hunt</div>
+                    <div class="cast-role">Sally Carrera</div>
+                </a>
+
+            </div>
+        </div>
+            <script>
+            /* Cast photos: pulled from Wikipedia by each actor's page name */
+            document.querySelectorAll('#cast .cast-photo[data-wiki]').forEach(function (el) {
+                var url = 'https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=pageimages&pithumbsize=300&titles=' + encodeURIComponent(el.getAttribute('data-wiki'));
+                fetch(url)
+                    .then(function (r) { return r.json(); })
+                    .then(function (d) {
+                        var pages = d.query.pages;
+                        var p = pages[Object.keys(pages)[0]];
+                        if (p && p.thumbnail && p.thumbnail.source) {
+                            el.style.backgroundImage = 'url("' + p.thumbnail.source + '")';
+                        }
+                    })
+                    .catch(function () {});
+            });
+            </script>
+    </section>
+ 
+    <!-- 5. SECTION 4: RACE TO THE FINISH (interactive) -->
+    <section class="race" id="race">
+        <canvas id="raceCanvas" aria-label="Interactive race. Tap repeatedly to rev your engine and beat the two rival cars to the finish line."></canvas>
+ 
+        <div class="race-top">
+            <span class="race-label">RACE TO THE FINISH</span>
+            <h2 class="race-title">Floor it.</h2>
+            <p class="race-hint" id="raceHint">Tap anywhere to rev your engine</p>
+        </div>
+ 
+        <div class="race-bottom">
+            <div class="race-stat"><strong id="raceSpeed">0</strong> mph</div>
+            <div class="race-pos" id="racePos">Ready on the grid</div>
+            <button class="race-reset" id="raceReset" type="button">&#8635; Rematch</button>
+            <nav class="race-links">
+                <a href="index.html">Home</a>
+                <a href="#cast">Cast</a>
+                <a href="#">Back to top &uarr;</a>
+            </nav>
+        </div>
+    </section>
+ 
+    <!-- 6. RUNTIME CONTROL SCRIPTS -->
+ 
+    <script>
+        // Opening curtain load transitions
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('splitOverlay').classList.add('open');
+            }, 300);
+        });
+        const popup = document.getElementById("popup");
+        const player = document.getElementById("player");
+ 
+        function openVideo(videoId) {
+ 
+            popup.style.display = "flex";
+ 
+            player.src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
+ 
+        }
+ 
+        function closeVideo() {
+ 
+            popup.style.display = "none";
+ 
+            player.src = "";
+ 
+        }
+ 
+        popup.onclick = function (e) {
+ 
+            if (e.target === popup) {
+ 
+                closeVideo();
+ 
+            }
+ 
+        }
+ 
+ 
+        // ===== Race to the finish (last section) =====
+        ;(function () {
+            const section = document.getElementById('race');
+            const canvas = document.getElementById('raceCanvas');
+            const ctx = canvas.getContext('2d');
+            const speedEl = document.getElementById('raceSpeed');
+            const posEl = document.getElementById('racePos');
+            const hintEl = document.getElementById('raceHint');
+            const resetBtn = document.getElementById('raceReset');
+ 
+            const FINISH = 5000;   // distance to the line
+            const SC = 0.5;        // world units -> pixels
+            const MESA_SPAN = 3640;
+ 
+            let W = 0, H = 0, dpr = 1, lastW = 0;
+            let state = 'idle';    // idle -> racing -> done
+            let elapsed = 0, bgPos = 0;
+            let player, rivals, puffs, order, resultText = '';
+            let running = false, last = 0;
+ 
+            const mesas = [];
+            for (let i = 0; i < 14; i++) {
+                mesas.push({
+                    x: i * 260 + (i * 53) % 90,
+                    w: 150 + (i * 37) % 120,
+                    h: 0.05 + ((i * 61) % 70) / 700,
+                    layer: i % 2
+                });
+            }
+ 
+            const small = () => W < 700;
+            const botPad = () => (small() ? 125 : 95);
+ 
+            function build() {
+                W = canvas.clientWidth;
+                H = canvas.clientHeight;
+                lastW = W;
+                dpr = Math.min(window.devicePixelRatio || 1, 2);
+                canvas.width = Math.round(W * dpr);
+                canvas.height = Math.round(H * dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+ 
+                state = 'idle';
+                elapsed = 0; bgPos = 0; resultText = '';
+                player = { pos: 0, v: 0 };
+                rivals = [
+                    { id: 'a', pos: 0, cur: 9.0, target: 9.0, base: 9.0, t: 0, color: '#2f6fe0' },
+                    { id: 'b', pos: 0, cur: 10.1, target: 10.1, base: 10.1, t: 0, color: '#2aa876' }
+                ];
+                puffs = [];
+                order = [];
+                hud();
+            }
+ 
+            function geo() {
+                const horizon = Math.round(H * 0.58);
+                const roadBottom = H - botPad();
+                const laneH = (roadBottom - horizon) / 3;
+                return { horizon: horizon, roadBottom: roadBottom, laneH: laneH };
+            }
+ 
+            function hud() {
+                speedEl.textContent = Math.round(player.v * 10);
+                if (state === 'idle') {
+                    hintEl.textContent = 'Tap anywhere to rev your engine';
+                    hintEl.classList.remove('quiet');
+                    posEl.textContent = 'Ready on the grid';
+                } else if (state === 'racing') {
+                    let p = 1;
+                    for (let i = 0; i < rivals.length; i++) if (rivals[i].pos > player.pos) p++;
+                    hintEl.textContent = "Keep tapping - don't let the revs drop!";
+                    hintEl.classList.add('quiet');
+                    posEl.textContent = 'P' + p + ' of 3  \u00b7  ' + (elapsed / 1000).toFixed(1) + 's';
+                } else {
+                    hintEl.textContent = 'Hit Rematch to race again';
+                    hintEl.classList.add('quiet');
+                    posEl.textContent = resultText;
+                }
+            }
+ 
+            function rev() {
+                if (state === 'done') return;
+                if (state === 'idle') state = 'racing';
+                player.v = Math.min(player.v + 4, 17);
+                for (let i = 0; i < 3; i++) {
+                    puffs.push({ dx: 0, dy: -Math.random() * 6, vx: -(1.5 + Math.random() * 2), vy: -(0.2 + Math.random() * 0.6), life: 30, s: 5 + Math.random() * 6 });
+                }
+            }
+ 
+            function step(dt) {
+                bgPos += (state === 'idle' ? 0.5 : Math.max(player.v, 0.3)) * dt;
+ 
+                for (let i = puffs.length - 1; i >= 0; i--) {
+                    const p = puffs[i];
+                    p.dx += p.vx * dt; p.dy += p.vy * dt; p.life -= dt;
+                    if (p.life <= 0) puffs.splice(i, 1);
+                }
+                if (state === 'idle') { hud(); return; }
+ 
+                if (state === 'racing') elapsed += dt * 16.67;
+ 
+                for (let i = 0; i < rivals.length; i++) {
+                    const r = rivals[i];
+                    r.t -= dt;
+                    if (r.t <= 0) { r.target = r.base + (Math.random() - 0.5) * 2.4; r.t = 40 + Math.random() * 60; }
+                    r.cur += (r.target - r.cur) * 0.05 * dt;
+                    r.pos += r.cur * dt;
+                    if (order.indexOf(r.id) < 0 && r.pos >= FINISH) order.push(r.id);
+                }
+ 
+                player.v *= Math.pow(0.97, dt);
+                if (player.v < 0.01) player.v = 0;
+                player.pos += player.v * dt;
+                if (player.v > 12 && Math.random() < 0.4) {
+                    puffs.push({ dx: 0, dy: -Math.random() * 6, vx: -2 - Math.random() * 2, vy: -0.3, life: 22, s: 4 + Math.random() * 4 });
+                }
+ 
+                if (state === 'racing' && player.pos >= FINISH) {
+                    order.push('p');
+                    const place = order.indexOf('p') + 1;
+                    const secs = (elapsed / 1000).toFixed(1);
+                    state = 'done';
+                    if (place === 1) resultText = 'P1 - Checkered flag! You won in ' + secs + 's';
+                    else if (place === 2) resultText = 'P2 - So close! ' + secs + 's. Rematch?';
+                    else resultText = 'P3 - Last place. ' + secs + 's. Rematch?';
+                }
+                hud();
+            }
+ 
+            function rr(x, y, w, h, r) {
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.lineTo(x + w - r, y);
+                ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+                ctx.lineTo(x + w, y + h - r);
+                ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                ctx.lineTo(x + r, y + h);
+                ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+                ctx.lineTo(x, y + r);
+                ctx.quadraticCurveTo(x, y, x + r, y);
+                ctx.closePath();
+            }
+ 
+            // a simple stock car, facing right
+            function car(x, yb, w, h, color, accent, wob) {
+                const wr = h * 0.2;
+                const y0 = yb - wob;
+ 
+                ctx.fillStyle = 'rgba(0,0,0,0.35)';
+                ctx.beginPath();
+                ctx.ellipse(x + w / 2, yb + 2, w * 0.46, h * 0.07, 0, 0, 6.283);
+                ctx.fill();
+ 
+                // rear wing
+                ctx.fillStyle = '#16161a';
+                ctx.fillRect(x + w * 0.035, y0 - h * 0.84, w * 0.03, h * 0.24);
+                ctx.fillRect(x - w * 0.02, y0 - h * 0.88, w * 0.12, h * 0.06);
+ 
+                // body
+                ctx.fillStyle = color;
+                rr(x, y0 - h * 0.62, w, h * 0.42, h * 0.12);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(x + w * 0.3, y0 - h * 0.6);
+                ctx.lineTo(x + w * 0.4, y0 - h);
+                ctx.lineTo(x + w * 0.68, y0 - h);
+                ctx.lineTo(x + w * 0.82, y0 - h * 0.6);
+                ctx.closePath();
+                ctx.fill();
+ 
+                // window
+                ctx.fillStyle = '#16222f';
+                ctx.beginPath();
+                ctx.moveTo(x + w * 0.35, y0 - h * 0.65);
+                ctx.lineTo(x + w * 0.43, y0 - h * 0.92);
+                ctx.lineTo(x + w * 0.66, y0 - h * 0.92);
+                ctx.lineTo(x + w * 0.76, y0 - h * 0.65);
+                ctx.closePath();
+                ctx.fill();
+ 
+                // stripe + headlight
+                ctx.fillStyle = accent;
+                ctx.fillRect(x + w * 0.04, y0 - h * 0.44, w * 0.92, h * 0.07);
+                ctx.fillStyle = '#fff3b0';
+                rr(x + w * 0.93, y0 - h * 0.54, w * 0.06, h * 0.1, 2);
+                ctx.fill();
+ 
+                // wheels
+                const ang = bgPos * 0.15;
+                const wx = [x + w * 0.22, x + w * 0.78];
+                for (let i = 0; i < 2; i++) {
+                    ctx.fillStyle = '#0b0b0d';
+                    ctx.beginPath(); ctx.arc(wx[i], y0 - wr, wr, 0, 6.283); ctx.fill();
+                    ctx.fillStyle = '#cfcfcf';
+                    ctx.beginPath(); ctx.arc(wx[i], y0 - wr, wr * 0.5, 0, 6.283); ctx.fill();
+                    ctx.strokeStyle = '#555';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(wx[i] - Math.cos(ang) * wr * 0.5, y0 - wr - Math.sin(ang) * wr * 0.5);
+                    ctx.lineTo(wx[i] + Math.cos(ang) * wr * 0.5, y0 - wr + Math.sin(ang) * wr * 0.5);
+                    ctx.stroke();
+                }
+            }
+ 
+            function draw(t) {
+                const g = geo();
+                const horizon = g.horizon, roadBottom = g.roadBottom, laneH = g.laneH;
+ 
+                // sunset sky
+                const sky = ctx.createLinearGradient(0, 0, 0, horizon);
+                sky.addColorStop(0, '#140a2e');
+                sky.addColorStop(0.5, '#7a1f3d');
+                sky.addColorStop(0.82, '#e8602c');
+                sky.addColorStop(1, '#ffb04a');
+                ctx.fillStyle = sky;
+                ctx.fillRect(0, 0, W, horizon);
+ 
+                // sun
+                const sx = W * 0.72, sy = horizon - 8;
+                const sun = ctx.createRadialGradient(sx, sy, 0, sx, sy, 130);
+                sun.addColorStop(0, 'rgba(255,226,138,1)');
+                sun.addColorStop(0.25, 'rgba(255,176,74,0.8)');
+                sun.addColorStop(1, 'rgba(255,176,74,0)');
+                ctx.fillStyle = sun;
+                ctx.fillRect(sx - 130, sy - 130, 260, 260);
+ 
+                // mesas (two parallax layers)
+                for (let layer = 0; layer < 2; layer++) {
+                    ctx.fillStyle = layer === 0 ? '#5a1a33' : '#2a0d26';
+                    const speed = layer === 0 ? 0.05 : 0.1;
+                    for (let i = 0; i < mesas.length; i++) {
+                        const m = mesas[i];
+                        if (m.layer !== layer) continue;
+                        let mx = m.x - ((bgPos * speed) % MESA_SPAN);
+                        if (mx < -m.w) mx += MESA_SPAN;
+                        const mh = m.h * H * (layer === 0 ? 1.1 : 0.8) + 18;
+                        ctx.beginPath();
+                        ctx.moveTo(mx, horizon);
+                        ctx.lineTo(mx + m.w * 0.12, horizon - mh);
+                        ctx.lineTo(mx + m.w * 0.88, horizon - mh);
+                        ctx.lineTo(mx + m.w, horizon);
+                        ctx.closePath();
+                        ctx.fill();
+                    }
+                }
+ 
+                // sand
+                const sand = ctx.createLinearGradient(0, horizon, 0, H);
+                sand.addColorStop(0, '#c2602d');
+                sand.addColorStop(1, '#6e2a18');
+                ctx.fillStyle = sand;
+                ctx.fillRect(0, horizon, W, H - horizon);
+ 
+                // road
+                ctx.fillStyle = '#1c1a1f';
+                ctx.fillRect(0, horizon, W, roadBottom - horizon);
+ 
+                // lane lines
+                ctx.strokeStyle = 'rgba(255,200,46,0.8)';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([26, 22]);
+                ctx.lineDashOffset = (bgPos * SC) % 48;
+                for (let i = 1; i < 3; i++) {
+                    const ly = horizon + laneH * i;
+                    ctx.beginPath(); ctx.moveTo(0, ly); ctx.lineTo(W, ly); ctx.stroke();
+                }
+                ctx.setLineDash([]);
+ 
+                // red and white kerb
+                const kw = 22, koff = (bgPos * SC) % (kw * 2);
+                for (let x = -koff - kw * 2; x < W + kw; x += kw) {
+                    const idx = Math.round((x + koff) / kw);
+                    ctx.fillStyle = idx % 2 === 0 ? '#d91e26' : '#f2f2f2';
+                    ctx.fillRect(x, roadBottom, kw, 8);
+                }
+ 
+                // geometry for cars
+                const carH = laneH * 0.72, carW = carH * 2.7;
+                const playerX = W * 0.3;
+                const jit = state === 'idle' ? Math.sin(t / 60) * 0.6 : Math.sin(t / 45) * Math.min(1.2, player.v / 8);
+ 
+                // start + finish lines
+                const startX = playerX + carW * 1.08 - player.pos * SC;
+                if (startX > -10 && startX < W) {
+                    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                    ctx.fillRect(startX, horizon, 4, roadBottom - horizon);
+                }
+                const finX = playerX + carW + (FINISH - player.pos) * SC;
+                if (finX > -30 && finX < W + 30) {
+                    const sq = 11;
+                    const rows = Math.ceil((roadBottom - horizon) / sq);
+                    for (let r = 0; r < rows; r++) {
+                        for (let c = 0; c < 2; c++) {
+                            ctx.fillStyle = (r + c) % 2 === 0 ? '#fff' : '#111';
+                            const hh = Math.min(sq, roadBottom - horizon - r * sq);
+                            ctx.fillRect(finX + c * sq, horizon + r * sq, sq, hh);
+                        }
+                    }
+                }
+ 
+                // cars: back lane first
+                const lane = function (n) { return horizon + laneH * (n + 1) - laneH * 0.1; };
+                for (let i = 0; i < rivals.length; i++) {
+                    const r = rivals[i];
+                    const rx = playerX + (r.pos - player.pos) * SC;
+                    car(rx, lane(i), carW, carH, r.color, '#ffffff', state === 'idle' ? jit : Math.sin(t / 50 + i) * 0.6);
+                }
+ 
+                // speed lines + exhaust puffs behind the player
+                const py = lane(2);
+                if (player.v > 10) {
+                    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+                    ctx.lineWidth = 1.5;
+                    for (let i = 0; i < 5; i++) {
+                        const ly = py - Math.random() * carH;
+                        const len = 20 + Math.random() * 60;
+                        ctx.beginPath(); ctx.moveTo(playerX - 8, ly); ctx.lineTo(playerX - 8 - len, ly); ctx.stroke();
+                    }
+                }
+                for (let i = 0; i < puffs.length; i++) {
+                    const p = puffs[i];
+                    ctx.globalAlpha = Math.max(0, p.life / 30) * 0.5;
+                    ctx.fillStyle = '#e6e0da';
+                    ctx.beginPath();
+                    ctx.arc(playerX + 4 + p.dx, py - carH * 0.2 + p.dy, p.s * (1.4 - p.life / 60), 0, 6.283);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+ 
+                car(playerX, py, carW, carH, '#d91e26', '#ffc82e', jit);
+ 
+                // finish banner text when close
+                if (state === 'done') {
+                    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+                    ctx.fillRect(0, horizon - 4, W, 4);
+                }
+            }
+ 
+            function frame(t) {
+                if (!running) return;
+                const dt = Math.min((t - last) / 16.67, 3);
+                last = t;
+                step(dt);
+                draw(t);
+                requestAnimationFrame(frame);
+            }
+ 
+            function start() {
+                if (running) return;
+                running = true;
+                last = performance.now();
+                requestAnimationFrame(frame);
+            }
+ 
+            canvas.addEventListener('pointerdown', rev);
+            resetBtn.addEventListener('click', build);
+ 
+            window.addEventListener('resize', function () {
+                if (canvas.clientWidth !== lastW) build();
+            });
+ 
+            new IntersectionObserver(function (entries) {
+                if (entries[0].isIntersecting) start();
+                else running = false;
+            }, { threshold: 0.05 }).observe(section);
+ 
+            build();
+        })();
+    </script>
+ 
+</body>
+ 
+</html>
