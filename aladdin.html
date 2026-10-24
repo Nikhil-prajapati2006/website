@@ -1,0 +1,2249 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aladdin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+   1. RESET & BASE STYLES
+   ========================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+ 
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+        }
+ 
+        body {
+            overflow-y: scroll;
+            background: #000;
+            color: white;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+ 
+        /* Global Typography & Resets */
+        ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+        }
+ 
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+ 
+        /* Global Section Snap Setting */
+        section {
+            height: 100vh;
+            scroll-snap-align: start;
+            scroll-snap-stop: normal;
+        }
+ 
+        /* ==========================================================================
+   2. NAVIGATION & OVERLAYS (SHARED)
+   ========================================================================== */
+        .back {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 18px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 2.3vh;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            transition: 0.3s;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            z-index: 10;
+        }
+ 
+        .back:hover {
+            background: #c8202f;
+            border-color: #c8202f;
+            transform: translateY(-2px);
+        }
+ 
+        /* Split reveal effect — plays once on page load */
+        .split-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+ 
+        .split-overlay .panel {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: #000;
+            transition: transform 1.3s ease;
+        }
+ 
+        .split-overlay .panel.left {
+            left: 0;
+        }
+ 
+        .split-overlay .panel.right {
+            right: 0;
+        }
+ 
+        .split-overlay.open .panel.left {
+            transform: translateX(-100%);
+        }
+ 
+        .split-overlay.open .panel.right {
+            transform: translateX(100%);
+        }
+ 
+ 
+        /* ==========================================================================
+   3. SECTION 1: HERO LANDING PAGE (UNTOUCHED)
+   ========================================================================== */
+        .info-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+ 
+        .pill {
+            padding: 6px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 6px;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            color: #e8e8e8;
+        }
+ 
+        .hero {
+            position: relative;
+            overflow: hidden;
+            scroll-snap-stop: always;
+        }
+ 
+        .hero-img {
+            display: none;
+        }
+ 
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url('aladdin.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: translateY(80px);
+            animation: fadeInUp 1.3s ease-out forwards;
+        }
+ 
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(80px);
+            }
+ 
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+ 
+ 
+ 
+        .title {
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            z-index: 2;
+            position: absolute;
+            /* left: 50vw; */
+            /* right: 30vw;  */
+            bottom: 6vh;
+            text-align: center;
+            font-size: clamp(50px, 10vw, 160px);
+            font-weight: 600;
+            letter-spacing: 0.22em;
+            padding-left: 0.22em;
+            line-height: 1;
+            color: #fff;
+            text-shadow: 0 6px 30px rgba(0, 0, 0, 0.65);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1.3s ease forwards;
+            animation-delay: 1.3s;
+        }
+ 
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background: linear-gradient(to top, rgba(26, 5, 8, 0.88) 0%, rgba(26, 5, 8, 0.3) 40%, transparent 65%);
+        }
+ 
+        @import url('https://googleapis.com');
+ 
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+ 
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+ 
+        .director-credit {
+            font-family: 'Libre Franklin', sans-serif;
+            font-weight: 300;
+            font-size: clamp(0.85rem, 1.2vw, 1.05rem);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #e8e4dc;
+            text-align: center;
+            margin-bottom: 1rem;
+            z-index: 2;
+            position: absolute;
+            bottom: 160px;
+            left: 550px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1.8s ease-out forwards;
+            animation-delay: 1.3s;
+        }
+ 
+        .director-credit span {
+            font-weight: 600;
+            font-size: 1.5em;
+            letter-spacing: 0.04em;
+            color: #fff;
+            margin-left: 0.4em;
+        }
+ 
+        @media (max-width: 768px) {
+            .hero p {
+                font-size: 3vh;
+            }
+        }
+ 
+ 
+        /* ==========================================================================
+   4. SECTION 2: MOVIE INFO (RE-DESIGNED PREMIUM CINEMATIC BACKGROUND)
+   ========================================================================== */
+        .movie-section {
+            /* Deep crimson palace with a golden glow rising from below */
+            background: radial-gradient(ellipse at 50% 125%, #b3122a 0%, #5a0d18 48%, #1a0508 100%);
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 80px;
+            box-sizing: border-box;
+            gap: 25px;
+        }
+ 
+        .movie-section::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 6px;
+            background: repeating-linear-gradient(90deg, #ffc82e 0 40px, transparent 40px 70px);
+            opacity: 0.85;
+        }
+ 
+        .genre-line {
+            color: #e0bd68;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+ 
+        /* Horizontal layout structures */
+        .movie-main-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 40px;
+            max-width: 1400px;
+            width: 100%;
+        }
+ 
+        .poster {
+            height: 370px;
+            width: 260px;
+            border-radius: 20px;
+            object-fit: cover;
+            flex-shrink: 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+        }
+ 
+        .movie-details {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            justify-content: center;
+        }
+ 
+        .movie-title {
+            font-size: 58px;
+            font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+            font-weight: 400;
+            color: #f1ede4;
+            letter-spacing: 1px;
+            line-height: 1.05;
+        }
+ 
+        .genre_rating {
+            display: flex;
+            align-items: center;
+            color: rgb(255, 255, 255);
+            font-size: 16px;
+            font-weight: 510;
+            font-family: sans-serif;
+        }
+ 
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+ 
+       
+ 
+        .overview {
+            max-width: 620px;
+            font-size: 17px;
+            line-height: 1.6;
+            color: #f6e9d0;
+            font-family: Arial, sans-serif;
+            border-left: 3px solid #ffc82e;
+            padding-left: 18px;
+        }
+ 
+        .cast_lan_wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+ 
+        .cast_lan_wrapper h2 {
+            font-size: 20px;
+        }
+ 
+        .cast_lan a {
+            color: #f2c75c;
+            transition: color 0.2s;
+        }
+ 
+        .cast_lan {
+            font-size: 19px;
+        }
+ 
+        .cast_lan a:hover {
+            color: #fff;
+ 
+        }
+ 
+        .language-text {
+            color: #fff;
+            font-size: 19px;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+ 
+        /* Action button configurations */
+        .button-group {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+ 
+        .watch_now {
+            padding: 10px 24px;
+            color: white;
+            border-radius: 11px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid rgb(217, 30, 38);
+            background-color: rgb(217, 30, 38);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+ 
+        .watch_now:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(217, 30, 38, 0.45);
+        }
+ 
+        .caution {
+            color: #ffd25a;
+            font-size: 15px;
+            font-weight: 500;
+        }
+ 
+       
+        .trailer-gallery {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            margin-top: 0;
+        }
+ 
+        .card {
+            flex: 1;
+            max-width: 320px;
+            height: 175px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+        }
+ 
+        .card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.15) 45%, transparent 70%);
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+ 
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 200, 46, 0.5);
+            border-color: #ffc82e;
+        }
+ 
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease, filter 0.5s ease;
+        }
+ 
+        .card:hover img {
+            transform: scale(1.08);
+            filter: brightness(0.75);
+        }
+ 
+        .card-caption {
+            position: absolute;
+            left: 16px;
+            bottom: 14px;
+            z-index: 2;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+ 
+        .card:hover .card-caption {
+            color: #ffe28a;
+        }
+ 
+        .play {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            z-index: 2;
+            width: 34px;
+            height: 34px;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1.5px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 13px;
+            padding-left: 2px;
+            backdrop-filter: blur(4px);
+            transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+        }
+ 
+        .card:hover .play {
+            background: #d91e26;
+            border-color: #d91e26;
+            transform: scale(1.1);
+        }
+
+        /* Video popups overlays */
+        .popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .popup iframe {
+            width: 80%;
+            height: 80%;
+            border: none;
+            border-radius: 10px;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 45px;
+            color: white;
+            cursor: pointer;
+        }
+ 
+ 
+        /* ==========================================================================
+   5. SECTION 3: CAST STYLES & PICTURE REGISTRATION
+   ========================================================================== */
+        #cast {
+            background: linear-gradient(180deg, #1a0508 0%, #5a0d18 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 80px;
+        }
+ 
+        .cast-section {
+            width: 100%;
+            max-width: 1400px;
+        }
+ 
+        .cast-section h2 {
+            font-size: 32px;
+            margin-bottom: 25px;
+            font-family: 'Libre Franklin', sans-serif;
+            letter-spacing: 1px;
+        }
+ 
+        .cast {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 25px;
+            overflow-x: auto;
+            padding: 10px 5px 20px;
+        }
+ 
+        .cast::-webkit-scrollbar {
+            height: 6px;
+        }
+ 
+        .cast::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+        }
+ 
+ 
+ 
+        .cast {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 10px 2vw 20px;
+        }
+ 
+        .cast-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 130px;
+            flex-shrink: 0;
+            cursor: pointer;
+            text-decoration: none;
+        }
+ 
+        .cast-photo {
+            height: 190px;
+            width: 130px;
+            border-radius: 10px;
+            background-size: cover;
+            background-position: center;
+            background-color: #5a0d18;
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+ 
+        .cast-card:hover .cast-photo {
+            border-color: #ffc82e;
+            transform: scale(1.05);
+        }
+ 
+        .cast-name {
+            margin-top: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+            font-family: sans-serif;
+        }
+ 
+        .cast-role {
+            margin-top: 3px;
+            font-size: 13px;
+            color: #e0bd68;
+            text-align: center;
+            font-family: sans-serif;
+        }
+ 
+        .cillian_murphy {
+            background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGYWQ8IQbhg8VYYJ6fiz4r7Kw_adwCZJq2YVX9ZF8hXQ&s=10");
+        }
+ 
+        .robert_downey_jr {
+            background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeLgJOCzeHcfPDC2JUaUv0FE-Mg8xOKv05B4aY_dWrGQ&s");
+        }
+ 
+        .florence_pugh {
+            background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgih2KoYDlN_Yr2TyiZ9ougVt60x9EQYsh_jHLvaRB5VmUks9JoUtHE3PiFGhdA6Ef3sDWgxprVGWq1qsB0-JPZ2iMSose0menY0kQThh4mQ&s=10");
+        }
+ 
+        .matt_damon {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYelUaIo8iB4c2n3lK23qDo5qw2TC1SQ1Hz0eFvvg6JEb7VdMGxTqlo-YHTg8d435cZl8lMG5mYv6ROtK4hxGFOeXu5i4Ygv-Ch3uyyUW8&s=10');
+        }
+ 
+        .emily_blunt {
+            background-image: url('https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTpK8RV1Uo7xMfSaXFu8SklKjMDAssMxP-tyFevw-nMAO-ywJjAPUVshFhdWMjLaciGSZIHp_lvwxn-EntJP4HEfKJlGyzp3z0f0QyLYOSxXPONBDhDlBmuo7WVPdp0VeV7eqlgp2EJLLmu&s=19');
+        }
+ 
+        .kenneth_branagh {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlh0PXq3Vb-Mjqv78vtxVzzhx0idMf0ohOelPgpX-dRIMiH_JkoYcaDQ9t1NmcnbpGGcOC1uLeSdWiiOc4JEIf-kaOOlm-NL2aJifk-LNQ&s=10');
+        }
+ 
+        .benny_safdie {
+            background-image: url('https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTZBtdAg0MN6TO7oCn3XzA8CN68Zd9pCZFdB6S5Eqf1ogRRKrpBDK087HG5tod7Bv6Znzdkd3wBinJR0kUZFbqDNLFvYkaMbT4AdlxuW24VGQ7kFIdwhUOdwejV5EZp2_co6RLx5z01dBs&s=19');
+        }
+ 
+        .class_section {
+            position: absolute;
+            top: 100px;
+        }
+ 
+        /* =========================================================
+   SECTION 5 - MAGIC CARPET RIDE (tap to fly, collect gems)
+========================================================= */
+        .flight {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+            background: #12040a;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        #flightCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .flight-top {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 0 20px;
+            pointer-events: none;
+        }
+
+        .flight-label {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 6px;
+            color: #ffc82e;
+        }
+
+        .flight-title {
+            margin: 10px 0 8px;
+            font-family: 'Montserrat', 'Segoe UI', sans-serif;
+            font-size: clamp(34px, 4.6vw, 60px);
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            line-height: 1.05;
+            color: #fff;
+            text-shadow: 0 3px 0 #c8202f;
+        }
+
+        .flight-hint {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            letter-spacing: 1px;
+            color: #ffe9c4;
+            transition: opacity 0.4s ease;
+            animation: hintPulse 2s ease-in-out infinite;
+        }
+
+        .flight-hint.quiet {
+            animation: none;
+            opacity: 0.8;
+        }
+
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .flight-bottom {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 16px 40px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            border-top: 3px solid #ffc82e;
+            background: linear-gradient(to top, rgba(20, 4, 8, 0.95), rgba(20, 4, 8, 0.6));
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #d9b99a;
+            pointer-events: none;
+        }
+
+        .flight-stat strong {
+            font-family: 'Montserrat', 'Segoe UI', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffe28a;
+            margin-right: 4px;
+        }
+
+        .flight-status {
+            flex: 1;
+            text-align: center;
+            font-size: 14px;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .flight-reset {
+            pointer-events: auto;
+            padding: 8px 18px;
+            border: 1px solid #c8202f;
+            border-radius: 30px;
+            background: transparent;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.25s ease, transform 0.25s ease;
+        }
+
+        .flight-reset:hover {
+            background: #c8202f;
+            transform: translateY(-2px);
+        }
+
+        .flight-links {
+            display: flex;
+            gap: 22px;
+            pointer-events: auto;
+        }
+
+        .flight-links a {
+            color: #d9b99a;
+            transition: color 0.25s ease;
+        }
+
+        .flight-links a:hover {
+            color: #ffc82e;
+        }
+
+        /* =========================================================
+   MOBILE RESPONSIVE (phones only - desktop is unchanged)
+   Screen 1: half-height hero image + title, then movie details
+   Then scroll: trailers, cast, behind the scenes
+========================================================= */
+        @media (max-width: 768px) {
+ 
+            /* Natural scrolling instead of full-screen snapping */
+            html {
+                scroll-snap-type: none;
+            }
+ 
+            section {
+                height: auto;
+                scroll-snap-align: none;
+            }
+ 
+            /* ---------- HERO: half of the screen ---------- */
+            .hero {
+                height: auto;
+                background: #000;
+            }
+ 
+            /* phone: show the whole image (no crop), height follows the image */
+            .hero::before {
+                display: none;
+            }
+ 
+            .hero-img {
+                display: block;
+                width: 100%;
+                height: auto;
+                opacity: 0;
+                transform: translateY(40px);
+                animation: fadeInUp 1.3s ease-out forwards;
+            }
+ 
+            /* split-reveal curtain: only covers the hero image, not the full page */
+            .split-overlay {
+                position: absolute;
+                inset: 0;
+            }
+ 
+            /* same layout as laptop: title bottom-left, credit above it on the right */
+            .title {
+                left: 0;
+                right: 0;
+                bottom: 3vw;
+                text-align: center;
+                font-size: 14vw;
+                letter-spacing: 0.2em;
+                padding-left: 0.2em; /* balances trailing letter-spacing so it is truly centered */
+                line-height: 1.1;
+                white-space: nowrap;
+            }
+ 
+            /* centered, just above the title, half the title's size */
+            .hero .director-credit {
+                left: 0;
+                right: 0;
+                bottom: calc(8.8vw + 12px);
+                text-align: center;
+                font-size: 4vw;
+                letter-spacing: 0.1em;
+                margin-bottom: 0;
+                white-space: nowrap;
+            }
+ 
+            .hero .director-credit span {
+                font-size: 1em;
+                margin-left: 0.3em;
+            }
+ 
+            .back {
+                top: 14px;
+                left: 14px;
+                padding: 7px 14px;
+                font-size: 14px;
+            }
+ 
+            /* ---------- MOVIE DETAILS (below the half image) ---------- */
+            .info {
+                height: auto;
+            }
+ 
+            .movie-section {
+                height: auto;
+                min-height: 0;
+                justify-content: flex-start;
+                padding: 28px 20px 30px;
+                gap: 28px;
+            }
+ 
+            .movie-main-content {
+                flex-direction: column;
+                gap: 0;
+            }
+ 
+            /* hero image already acts as the poster on mobile */
+            .poster {
+                display: none;
+            }
+ 
+            .movie-details {
+                gap: 14px;
+                width: 100%;
+            }
+ 
+            .movie-title {
+                font-size: 38px;
+            }
+ 
+            .genre-line {
+                font-size: 11px;
+                letter-spacing: 2px;
+            }
+ 
+            .pill {
+                padding: 5px 11px;
+                font-size: 13px;
+            }
+ 
+            .overview {
+                max-width: 100%;
+                font-size: 15px;
+                line-height: 1.55;
+            }
+ 
+            .cast_lan {
+                font-size: 15px;
+            }
+ 
+            .cast_lan ul {
+                flex-wrap: wrap;
+                gap: 4px 8px;
+            }
+ 
+            .language-text {
+                font-size: 15px;
+            }
+ 
+            .button-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                margin-top: 6px;
+            }
+ 
+            .watch_now {
+                text-align: center;
+                padding: 13px 24px;
+                font-size: 16px;
+            }
+ 
+            .caution {
+                font-size: 13px;
+                text-align: center;
+            }
+ 
+            /* ---------- TRAILERS: third card removed on mobile only ---------- */
+            .trailer-gallery .card:nth-child(3) {
+                display: none;
+            }
+ 
+            .trailer-gallery {
+                gap: 12px;
+            }
+ 
+            .card {
+                max-width: none;
+                height: 120px;
+            }
+
+            .popup iframe {
+                width: 94%;
+                height: auto;
+                aspect-ratio: 16 / 9;
+            }
+
+            .close {
+                top: 14px;
+                right: 18px;
+                font-size: 34px;
+            }
+ 
+            /* ---------- CAST ---------- */
+            #cast {
+                height: auto;
+                padding: 40px 20px;
+            }
+ 
+            .cast-section h2 {
+                font-size: 24px;
+                margin-bottom: 14px;
+            }
+ 
+            .cast {
+                gap: 14px;
+                padding: 10px 0 16px;
+            }
+ 
+            .cast-card {
+                width: 110px;
+            }
+ 
+            .cast-photo {
+                height: 160px;
+                width: 110px;
+            }
+ 
+            /* ---------- LAST SECTION: magic carpet ride ---------- */
+            .flight {
+                height: auto;
+                min-height: 82vh;
+                min-height: 82svh;
+            }
+
+            .flight-top {
+                top: 64px;
+            }
+
+            .flight-label {
+                font-size: 11px;
+                letter-spacing: 4px;
+            }
+
+            .flight-hint {
+                font-size: 13px;
+            }
+
+            .flight-bottom {
+                padding: 12px 20px 16px;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+
+            .flight-status {
+                order: 3;
+                flex-basis: 100%;
+            }
+
+            .flight-links {
+                width: 100%;
+                justify-content: center;
+                gap: 26px;
+                order: 4;
+            }
+        }
+        /* =========================================================
+   SECTION 4 - REVIEWS & RATINGS
+========================================================= */
+        .reviews-section {
+            position: relative;
+            min-height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(180deg, #2a0710 0%, #6b0f1a 65%, #a3162a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 40px 100px;
+            gap: 22px;
+        }
+
+        .reviews-head {
+            text-align: center;
+        }
+
+        .reviews-label {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 6px;
+            color: #ffc82e;
+        }
+
+        .reviews-title {
+            margin-top: 8px;
+            font-family: 'Montserrat', 'Segoe UI', sans-serif;
+            font-size: clamp(34px, 4.6vw, 56px);
+            font-weight: 800;
+            line-height: 1.05;
+            color: #fff;
+            text-shadow: 0 3px 0 #1a0508;
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 24px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .rv-card {
+            background: #fbf1df;
+            color: #3a0d12;
+            border-top: 4px solid #f2b632;
+            border-radius: 18px;
+            padding: 24px 26px;
+            box-shadow: 0 20px 40px rgba(26, 5, 8, 0.55);
+            font-family: Arial, sans-serif;
+        }
+
+        .rv-heading {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #c8202f;
+            margin-bottom: 14px;
+        }
+
+        .score-row {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            margin-bottom: 18px;
+        }
+
+        .ring-wrap {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            flex-shrink: 0;
+        }
+
+        .ring-wrap svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .ring-bg {
+            fill: none;
+            stroke: rgba(143, 15, 30, 0.15);
+            stroke-width: 10;
+        }
+
+        .ring-fg {
+            fill: none;
+            stroke: #c8202f;
+            stroke-width: 10;
+            stroke-linecap: round;
+            stroke-dasharray: 327;
+            stroke-dashoffset: 327;
+            transition: stroke-dashoffset 0.7s ease;
+        }
+
+        .ring-num {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .ring-num small {
+            font-family: Arial, sans-serif;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #7a5a4a;
+        }
+
+        .imdb-box {
+            font-size: 13px;
+            color: #7a5a4a;
+            line-height: 1.5;
+        }
+
+        .imdb-box strong {
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 26px;
+            color: #3a0d12;
+        }
+
+        .cat-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 7px 0;
+            border-top: 1px solid rgba(143, 15, 30, 0.15);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .stars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star {
+            border: none;
+            background: none;
+            padding: 0 1px;
+            font-size: 24px;
+            line-height: 1;
+            color: #d8cdb4;
+            cursor: pointer;
+            transition: transform 0.15s ease, color 0.15s ease;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        .star.on {
+            color: #e0a41a;
+        }
+
+        .star.hov {
+            color: #f0c85a;
+        }
+
+        .rv-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .rv-form input,
+        .rv-form textarea {
+            width: 100%;
+            border: 1.5px solid rgba(143, 15, 30, 0.3);
+            border-radius: 10px;
+            background: #fff9ee;
+            padding: 10px 12px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #3a0d12;
+            outline: none;
+            resize: none;
+        }
+
+        .rv-form input:focus,
+        .rv-form textarea:focus {
+            border-color: #8f0f1e;
+        }
+
+        .rv-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .rv-count {
+            font-size: 12px;
+            color: #7a5a4a;
+        }
+
+        .post-btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 10px;
+            background: #c8202f;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .post-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(200, 32, 47, 0.4);
+        }
+
+        .rv-list {
+            margin-top: 14px;
+            max-height: 150px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 4px;
+        }
+
+        .rv-item {
+            border-left: 3px solid #e0a41a;
+            padding: 4px 24px 4px 12px;
+            font-size: 14px;
+            line-height: 1.45;
+            position: relative;
+            overflow-wrap: anywhere;
+        }
+
+        .rv-item b {
+            font-size: 13px;
+        }
+
+        .rv-item .rv-pill {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 1px 8px;
+            border-radius: 20px;
+            background: #8f0f1e;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .rv-item .rv-del {
+            position: absolute;
+            top: 2px;
+            right: 0;
+            border: none;
+            background: none;
+            color: #7a5a4a;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .rv-empty {
+            font-size: 14px;
+            color: #7a5a4a;
+            font-style: italic;
+        }
+
+        .reviews-links {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 18px 40px 22px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            border-top: 3px solid #ffc82e;
+            background: rgba(26, 5, 8, 0.55);
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #fff;
+        }
+
+        .reviews-links a {
+            transition: opacity 0.25s ease;
+        }
+
+        .reviews-links a:hover {
+            opacity: 0.7;
+        }
+
+        /* mobile rules for the section (keep these at the end of your CSS) */
+        @media (max-width: 768px) {
+
+            .reviews-section {
+                min-height: 0;
+                padding: 50px 16px 90px;
+            }
+
+            .reviews-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rv-card {
+                padding: 20px 18px;
+            }
+
+            .score-row {
+                gap: 16px;
+            }
+
+            .ring-wrap {
+                width: 100px;
+                height: 100px;
+            }
+
+            .reviews-links {
+                padding: 14px 20px 18px;
+                gap: 22px;
+            }
+        }
+    </style><!-- Link to your external stylesheet here -->
+</head>
+ 
+<body>
+ 
+ 
+    <!-- 2. SECTION 1: HERO LANDING PAGE -->
+    <section class="hero">
+        <!-- LOADING EFFECT SPLIT PANELS (hero image only) -->
+        <div class="split-overlay" id="splitOverlay">
+            <div class="panel left"></div>
+            <div class="panel right"></div>
+        </div>
+        <a href="index.html" class="back"> ← Back</a>
+        <!-- <p class="director-credit">
+            A FILM BY <span>CHRISTOPHER NOLAN</span>
+        </p> -->
+        <img class="hero-img" src="aladdin.jpg" alt="Aladdin">
+        <h1 class="title">Aladdin</h1>
+    </section>
+ 
+    <!-- 3. SECTION 2: MOVIE PROFILE INFO -->
+    <section class="info">
+        <div class="movie-section">
+ 
+            <!-- Core Content Info Wrapper -->
+            <div class="movie-main-content">
+                <img class="poster" src="aladdin_poster.jpg" alt="Aladdin Poster">
+ 
+                <div class="movie-details">
+                    <h2 class="movie-title">Aladdin</h2>
+                    <div class="genre-line">ADVENTURE &middot; FANTASY &middot; MUSICAL</div>
+                    <div class="info-pills">
+                        <span class="pill">2019</span>
+                        <span class="pill">2H 8M</span>
+                        <span class="pill">PG</span>
+                    </div>
+ 
+              
+                    <blockquote class="overview">
+                        A kind-hearted street thief named Aladdin finds a magic lamp and, with the help of a wisecracking Genie, sets out to win the heart of Princess Jasmine while stopping the scheming Jafar.
+                    </blockquote>
+ 
+                    <div class="cast_lan_wrapper">
+                        <div class="cast_lan">
+                            <ul>
+                                <li><strong>Cast:</strong> Will Smith,</li>
+                                <li>Mena Massoud,</li>
+                                <li>Naomi Scott,</li>
+                                <li>Marwan Kenzari...</li>
+                                <li><a href="#cast">view more</a></li>
+                            </ul>
+                        </div>
+                        <h3 class="language-text">Language: Dual Audio (English, Hindi)</h3>
+                    </div>
+ 
+                    <div class="button-group">
+                        <a class="watch_now"
+                            href="https://drive.google.com/file/d/1m3L2jfHGs5ROfNYsYN3h_tc3tDZ9rEGh/view?usp=sharing"
+                            onclick="openDrive(event)">▶ Watch Now</a>
+                        <p class="caution">Dual Audio is available when you download the movie</p>
+                    </div>
+                </div>
+            </div>
+ 
+            <!-- Preview Gallery Grid Row -->
+              <div class="trailer-gallery">
+                <div class="card" onclick="openVideo('-G5XI61Y9ms')">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREd_c8NE3KMqZUrb6NQ6lDaURP3MRz49uYdBQXLJ_3XQ&s=10" alt="Official Trailer">
+                    <div class="play">▶</div>
+                </div>
+                <div class="card" onclick="openVideo('eitDnP0_83k')">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJINgvnaeidc3mDmCdrBhYYvOdbxKSC4CQtWPvPEm3iA&s=10" alt="Teaser Trailer">
+                    <div class="play">▶</div>
+                </div>
+                <!-- <div class="card" onclick="openVideo('https://www.dailymotion.com/embed/video/x75210m?autoplay=1')">
+                    <img src="https://www.dailymotion.com/thumbnail/video/x75210m" alt="Within Trailer">
+                    <div class="play">▶</div>
+                </div> -->
+            </div>
+ 
+        </div>
+
+        <!-- Video Modal Lightbox Overlay -->
+        <div class="popup" id="popup">
+            <span class="close" onclick="closeVideo()">✖</span>
+            <iframe id="player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+    </section>
+ 
+    <!-- 4. SECTION 3: CAST LIST SLIDER -->
+    <section id="cast">
+        <div class="cast-section">
+            <h2>Cast:</h2>
+            <div class="cast">
+
+                                <a class="cast-card" href="https://www.google.com/search?q=mena+massoud" target="_blank">
+                    <div class="cast-photo" data-wiki="Mena_Massoud"></div>
+                    <div class="cast-name">Mena Massoud</div>
+                    <div class="cast-role">Aladdin</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=naomi+scott" target="_blank">
+                    <div class="cast-photo" data-wiki="Naomi_Scott"></div>
+                    <div class="cast-name">Naomi Scott</div>
+                    <div class="cast-role">Jasmine</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=will+smith" target="_blank">
+                    <div class="cast-photo" data-wiki="Will_Smith"></div>
+                    <div class="cast-name">Will Smith</div>
+                    <div class="cast-role">Genie</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=marwan+kenzari" target="_blank">
+                    <div class="cast-photo" data-wiki="Marwan_Kenzari"></div>
+                    <div class="cast-name">Marwan Kenzari</div>
+                    <div class="cast-role">Jafar</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=navid+negahban" target="_blank">
+                    <div class="cast-photo" data-wiki="Navid_Negahban"></div>
+                    <div class="cast-name">Navid Negahban</div>
+                    <div class="cast-role">The Sultan</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=nasim+pedrad" target="_blank">
+                    <div class="cast-photo" data-wiki="Nasim_Pedrad"></div>
+                    <div class="cast-name">Nasim Pedrad</div>
+                    <div class="cast-role">Dalia</div>
+                </a>
+
+                <a class="cast-card" href="https://www.google.com/search?q=billy+magnussen" target="_blank">
+                    <div class="cast-photo" data-wiki="Billy_Magnussen"></div>
+                    <div class="cast-name">Billy Magnussen</div>
+                    <div class="cast-role">Prince Anders</div>
+                </a>
+
+            </div>
+        </div>
+            <script>
+            /* Cast photos: pulled from Wikipedia by each actor's page name */
+            document.querySelectorAll('#cast .cast-photo[data-wiki]').forEach(function (el) {
+                var url = 'https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=pageimages&pithumbsize=300&titles=' + encodeURIComponent(el.getAttribute('data-wiki'));
+                fetch(url)
+                    .then(function (r) { return r.json(); })
+                    .then(function (d) {
+                        var pages = d.query.pages;
+                        var p = pages[Object.keys(pages)[0]];
+                        if (p && p.thumbnail && p.thumbnail.source) {
+                            el.style.backgroundImage = 'url("' + p.thumbnail.source + '")';
+                        }
+                    })
+                    .catch(function () {});
+            });
+            </script>
+    </section>
+    <!-- 5. SECTION 4: REVIEWS & RATINGS (interactive) -->
+    <section class="reviews-section" id="reviews-section">
+        <div class="reviews-head">
+            <span class="reviews-label">REVIEWS &amp; RATINGS</span>
+            <h2 class="reviews-title">What's your verdict?</h2>
+        </div>
+ 
+        <div class="reviews-grid">
+            <div class="rv-card">
+                <div class="rv-heading">Rate the film</div>
+                <div class="score-row">
+                    <div class="ring-wrap">
+                        <svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52" /><circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52" /></svg>
+                        <div class="ring-num"><span id="myScore">&mdash;</span><small>YOUR SCORE</small></div>
+                    </div>
+                    <div class="imdb-box"><strong id="rateCount">0 / 5</strong>categories rated</div>
+                </div>
+                <div id="catRows"></div>
+            </div>
+ 
+            <div class="rv-card">
+                <div class="rv-heading">Write a review</div>
+                <form class="rv-form" id="rvForm" autocomplete="off">
+                    <input id="rvName" type="text" maxlength="24" placeholder="Your name" aria-label="Your name">
+                    <textarea id="rvText" rows="3" maxlength="240" placeholder="What did you think of the movie?" aria-label="Your review"></textarea>
+                    <div class="rv-actions">
+                        <span class="rv-count" id="rvCount">0 / 240</span>
+                        <button class="post-btn" type="submit">Post review</button>
+                    </div>
+                </form>
+                <div class="rv-list" id="rvList"></div>
+            </div>
+        </div>
+ 
+        <nav class="reviews-links">
+            <a href="index.html">Home</a>
+            <a href="#cast">Cast</a>
+            <a href="#">Back to top &uarr;</a>
+        </nav>
+    </section>
+
+    <!-- 6. SECTION 5: MAGIC CARPET RIDE (interactive) -->
+    <section class="flight" id="flight">
+        <canvas id="flightCanvas" aria-label="Interactive magic carpet ride. Tap or press space to fly the carpet up, collect golden gems and slip between the towers."></canvas>
+
+        <div class="flight-top">
+            <span class="flight-label">A WHOLE NEW WORLD</span>
+            <h2 class="flight-title">Take the carpet.</h2>
+            <p class="flight-hint" id="flightHint">Tap anywhere to fly</p>
+        </div>
+
+        <div class="flight-bottom">
+            <div class="flight-stat"><strong id="flightGems">0</strong> gems</div>
+            <div class="flight-status" id="flightStatus">Ready for takeoff</div>
+            <button class="flight-reset" id="flightReset" type="button">&#8635; Fly again</button>
+            <nav class="flight-links">
+                <a href="index.html">Home</a>
+                <a href="#cast">Cast</a>
+                <a href="#">Back to top &uarr;</a>
+            </nav>
+        </div>
+    </section>
+ 
+    <!-- 6. RUNTIME CONTROL SCRIPTS -->
+ 
+    <script>
+        // ===== Reviews & ratings (last section) =====
+        ;(function () {
+            const cats = ['Action', 'Story', 'Acting', 'Visuals', 'Music'];
+            const KEY = 'aladdin_reviews_v1';
+            const rows = document.getElementById('catRows');
+            const ringFg = document.getElementById('ringFg');
+            const myScore = document.getElementById('myScore');
+            const form = document.getElementById('rvForm');
+            const nameEl = document.getElementById('rvName');
+            const textEl = document.getElementById('rvText');
+            const countEl = document.getElementById('rvCount');
+            const listEl = document.getElementById('rvList');
+            const C = 327;
+            let ratings = {};          // category -> 1..5
+            let reviews = [];
+ 
+            function load() {
+                try {
+                    const d = JSON.parse(localStorage.getItem(KEY) || '{}');
+                    ratings = d.ratings || {};
+                    reviews = Array.isArray(d.reviews) ? d.reviews : [];
+                } catch (e) {}
+            }
+            function save() {
+                try { localStorage.setItem(KEY, JSON.stringify({ ratings: ratings, reviews: reviews })); } catch (e) {}
+            }
+ 
+            function score() {
+                const v = cats.map(function (c) { return ratings[c]; }).filter(Boolean);
+                if (!v.length) return null;
+                return (v.reduce(function (a, b) { return a + b; }, 0) / v.length) * 2;
+            }
+ 
+            function paintStars(row, n, cls) {
+                Array.prototype.forEach.call(row.children, function (st, i) {
+                    st.classList.toggle(cls, i < n);
+                });
+            }
+ 
+            function renderScore() {
+                const sc = score();
+                myScore.textContent = sc === null ? '—' : sc.toFixed(1);
+                document.getElementById('rateCount').textContent = cats.filter(function (c) { return ratings[c]; }).length + ' / ' + cats.length;
+                ringFg.style.strokeDashoffset = sc === null ? C : C * (1 - sc / 10);
+            }
+ 
+            cats.forEach(function (c) {
+                const row = document.createElement('div');
+                row.className = 'cat-row';
+                const label = document.createElement('span');
+                label.textContent = c;
+                const stars = document.createElement('div');
+                stars.className = 'stars';
+                for (let i = 1; i <= 5; i++) {
+                    const b = document.createElement('button');
+                    b.type = 'button'; b.className = 'star'; b.textContent = '★';
+                    b.setAttribute('aria-label', c + ' ' + i + ' of 5');
+                    b.addEventListener('mouseenter', function () { paintStars(stars, i, 'hov'); });
+                    b.addEventListener('mouseleave', function () { paintStars(stars, 0, 'hov'); });
+                    b.addEventListener('click', function () {
+                        ratings[c] = ratings[c] === i ? 0 : i;
+                        paintStars(stars, ratings[c], 'on');
+                        renderScore(); save();
+                    });
+                    stars.appendChild(b);
+                }
+                row.appendChild(label); row.appendChild(stars);
+                rows.appendChild(row);
+                row._stars = stars;
+            });
+ 
+            function renderReviews() {
+                listEl.innerHTML = '';
+                if (!reviews.length) {
+                    const e = document.createElement('div');
+                    e.className = 'rv-empty';
+                    e.textContent = 'No reviews yet. Be the first to post one!';
+                    listEl.appendChild(e);
+                    return;
+                }
+                reviews.forEach(function (r, idx) {
+                    const it = document.createElement('div');
+                    it.className = 'rv-item';
+                    const b = document.createElement('b');
+                    b.textContent = r.name;
+                    it.appendChild(b);
+                    if (r.score) {
+                        const pill = document.createElement('span');
+                        pill.className = 'rv-pill';
+                        pill.textContent = r.score + '/10';
+                        it.appendChild(pill);
+                    }
+                    const p = document.createElement('div');
+                    p.textContent = r.text;
+                    it.appendChild(p);
+                    const d = document.createElement('button');
+                    d.type = 'button'; d.className = 'rv-del'; d.textContent = '×';
+                    d.setAttribute('aria-label', 'Delete review');
+                    d.addEventListener('click', function () { reviews.splice(idx, 1); save(); renderReviews(); });
+                    it.appendChild(d);
+                    listEl.appendChild(it);
+                });
+            }
+ 
+            textEl.addEventListener('input', function () { countEl.textContent = textEl.value.length + ' / 240'; });
+ 
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const text = textEl.value.trim();
+                if (!text) { textEl.focus(); return; }
+                const sc = score();
+                reviews.unshift({ name: nameEl.value.trim() || 'Guest', text: text, score: sc === null ? null : sc.toFixed(1) });
+                reviews = reviews.slice(0, 30);
+                textEl.value = ''; countEl.textContent = '0 / 240';
+                save(); renderReviews();
+            });
+ 
+            load();
+            Array.prototype.forEach.call(rows.children, function (row, i) {
+                paintStars(row._stars, ratings[cats[i]] || 0, 'on');
+            });
+            renderScore();
+            renderReviews();
+        })();
+        // Opening curtain load transitions
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('splitOverlay').classList.add('open');
+            }, 300);
+        });
+        const popup = document.getElementById("popup");
+        const player = document.getElementById("player");
+
+        // Accepts a YouTube video ID or a full embed URL
+        function openVideo(video) {
+            popup.style.display = "flex";
+            player.src = video.indexOf("http") === 0
+                ? video
+                : "https://www.youtube.com/embed/" + video + "?autoplay=1";
+        }
+
+        function closeVideo() {
+            popup.style.display = "none";
+            player.src = "";
+        }
+
+        popup.onclick = function (e) {
+            if (e.target === popup) {
+                closeVideo();
+            }
+        };
+
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && popup.style.display === "flex") closeVideo();
+        });
+        // ===== Magic carpet ride (last section) =====
+        ;(function () {
+            const section = document.getElementById('flight');
+            const canvas = document.getElementById('flightCanvas');
+            const ctx = canvas.getContext('2d');
+            const gemsEl = document.getElementById('flightGems');
+            const statusEl = document.getElementById('flightStatus');
+            const hintEl = document.getElementById('flightHint');
+            const resetBtn = document.getElementById('flightReset');
+            const BEST_KEY = 'aladdin_flight_best';
+
+            const GRAVITY = 0.34;   // downward pull per frame
+            const FLAP = -6.3;      // upward kick per tap
+            const MAX_FALL = 7.5;
+
+            let W = 0, H = 0, dpr = 1, lastW = 0;
+            let state = 'idle';     // idle -> playing -> over
+            let carpet, towers, gems, sparks;
+            let gemCount = 0, best = 0, newBest = false;
+            let speed = 3, bgPos = 0, clock = 0, overAt = 0;
+            let running = false, keysOn = false, last = 0;
+
+            try { best = Number(localStorage.getItem(BEST_KEY)) || 0; } catch (e) { }
+
+            // small seeded random so the skyline looks the same on every visit
+            function rng(seed) {
+                return function () {
+                    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+                    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+                    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+                    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+                };
+            }
+
+            function makeSkyline(seed, count, minH, maxH) {
+                const r = rng(seed);
+                const list = [];
+                let x = 0;
+                for (let i = 0; i < count; i++) {
+                    const w = 46 + r() * 64;
+                    const roll = r();
+                    list.push({
+                        x: x, w: w, h: minH + r() * (maxH - minH),
+                        type: roll < 0.4 ? 'dome' : (roll < 0.7 ? 'minaret' : 'flat')
+                    });
+                    x += w + 8 + r() * 36;
+                }
+                return { list: list, span: x };
+            }
+            const farCity = makeSkyline(7, 26, 40, 110);
+            const nearCity = makeSkyline(21, 22, 50, 130);
+
+            const starRand = rng(99);
+            const stars = [];
+            for (let i = 0; i < 90; i++) {
+                stars.push({ x: starRand(), y: starRand() * 0.7, r: 0.6 + starRand() * 1.3, ph: starRand() * 6.28 });
+            }
+
+            const small = () => W < 700;
+            const botPad = () => (small() ? 125 : 95);
+            const groundY = () => H - botPad();
+            const horizonY = () => Math.round(groundY() * 0.78);
+            const towerW = () => (small() ? 54 : 70);
+            const spacing = () => (small() ? 250 : 340);
+            const gapH = () => Math.max(165, Math.min(235, groundY() * 0.36));
+
+            function build() {
+                W = canvas.clientWidth;
+                H = canvas.clientHeight;
+                lastW = W;
+                dpr = Math.min(window.devicePixelRatio || 1, 2);
+                canvas.width = Math.round(W * dpr);
+                canvas.height = Math.round(H * dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+                const cw = small() ? 64 : 88;
+                carpet = { x: Math.max(90, W * 0.24), y: groundY() * 0.45, vy: 0, w: cw, h: cw * 0.3 };
+                towers = []; gems = []; sparks = [];
+                state = 'idle';
+                gemCount = 0; newBest = false;
+                speed = small() ? 2.4 : 3;
+                bgPos = 0;
+                hud();
+            }
+
+            function hud() {
+                gemsEl.textContent = gemCount;
+                if (state === 'idle') {
+                    hintEl.textContent = 'Tap anywhere (or press space) to fly';
+                    hintEl.classList.remove('quiet');
+                    statusEl.textContent = best ? 'Best: ' + best + (best === 1 ? ' gem' : ' gems') : 'Ready for takeoff';
+                } else if (state === 'playing') {
+                    hintEl.textContent = 'Keep tapping - slip between the towers!';
+                    hintEl.classList.add('quiet');
+                    statusEl.textContent = 'Best: ' + best + (best === 1 ? ' gem' : ' gems');
+                } else {
+                    hintEl.textContent = 'Tap to fly again';
+                    hintEl.classList.add('quiet');
+                    statusEl.textContent = (newBest ? 'New best! ' : 'Crash! ') + gemCount + (gemCount === 1 ? ' gem' : ' gems') + ' collected';
+                }
+            }
+
+            function burst(x, y, n, power, color) {
+                for (let i = 0; i < n && sparks.length < 160; i++) {
+                    sparks.push({
+                        x: x, y: y,
+                        vx: (Math.random() - 0.5) * power, vy: (Math.random() - 0.5) * power,
+                        life: 24 + Math.random() * 16, max: 40, s: 1.5 + Math.random() * 2.5, c: color
+                    });
+                }
+            }
+
+            function flap() {
+                if (state === 'over') {
+                    if (performance.now() - overAt < 400) return;   // stops a frantic tap from skipping the result
+                    build();
+                }
+                if (state === 'idle') { state = 'playing'; hud(); }
+                carpet.vy = FLAP;
+                burst(carpet.x - carpet.w * 0.4, carpet.y + carpet.h * 0.3, 4, 2.5, '255,210,100');
+            }
+
+            function crash() {
+                state = 'over';
+                overAt = performance.now();
+                if (gemCount > best) {
+                    best = gemCount;
+                    newBest = true;
+                    try { localStorage.setItem(BEST_KEY, String(best)); } catch (e) { }
+                }
+                burst(carpet.x, carpet.y, 30, 9, '255,110,90');
+                carpet.vy = 0;
+                hud();
+            }
+
+            function spawnTower(x) {
+                const gh = gapH();
+                const top = gh / 2 + 60;
+                const bottom = groundY() - gh / 2 - 50;
+                const prev = towers.length ? towers[towers.length - 1].gapY : carpet.y;
+                let y = top + Math.random() * Math.max(10, bottom - top);
+                y = Math.max(prev - 150, Math.min(prev + 150, y));   // keep each gap reachable from the last
+                y = Math.max(top, Math.min(bottom, y));
+                const t = { x: x, w: towerW(), gapY: y, gapH: gh };
+                towers.push(t);
+                gems.push({ x: x + t.w / 2, y: y, r: 12, ph: Math.random() * 6, taken: false });
+                if (towers.length > 1) {
+                    gems.push({ x: x - spacing() / 2 + t.w / 2, y: (prev + y) / 2, r: 10, ph: Math.random() * 6, taken: false });
+                }
+            }
+
+            function trail(dt) {
+                if (sparks.length < 160 && Math.random() < 0.6 * dt) {
+                    sparks.push({
+                        x: carpet.x - carpet.w * 0.5, y: carpet.y + carpet.h * 0.2 + (Math.random() - 0.5) * carpet.h,
+                        vx: -1 - Math.random(), vy: (Math.random() - 0.5) * 0.4,
+                        life: 26, max: 26, s: 1.2 + Math.random() * 2, c: '255,210,100'
+                    });
+                }
+            }
+
+            function stepSparks(dt) {
+                for (let i = sparks.length - 1; i >= 0; i--) {
+                    const p = sparks[i];
+                    p.x += (p.vx - (state === 'playing' ? speed * 0.5 : 0)) * dt;
+                    p.y += p.vy * dt;
+                    p.life -= dt;
+                    if (p.life <= 0) sparks.splice(i, 1);
+                }
+            }
+
+            function step(dt) {
+                clock += dt * 16.67;
+                const gY = groundY();
+                const hh = carpet.h * 0.9;
+
+                if (state === 'idle') {
+                    carpet.y = gY * 0.45 + Math.sin(clock / 380) * 9;
+                    bgPos += 0.6 * dt;
+                    trail(dt);
+                } else if (state === 'playing') {
+                    speed = (small() ? 2.4 : 3) + Math.min(gemCount * 0.05, 1.6);
+                    carpet.vy = Math.min(carpet.vy + GRAVITY * dt, MAX_FALL);
+                    carpet.y += carpet.vy * dt;
+                    if (carpet.y < hh) { carpet.y = hh; if (carpet.vy < 0) carpet.vy = 0; }
+                    bgPos += speed * dt;
+                    trail(dt);
+
+                    // spawn the next tower just off the right edge
+                    let nextX = towers.length ? towers[towers.length - 1].x + spacing() : W + 160;
+                    while (nextX <= W + 160) {
+                        spawnTower(nextX);
+                        nextX = towers[towers.length - 1].x + spacing();
+                    }
+
+                    const hw = carpet.w * 0.4;
+                    let hit = false;
+                    for (let i = towers.length - 1; i >= 0; i--) {
+                        const t = towers[i];
+                        t.x -= speed * dt;
+                        if (t.x + t.w * 1.3 < -10) { towers.splice(i, 1); continue; }
+                        const domeH = t.w * 0.75;
+                        if (carpet.x + hw > t.x - t.w * 0.18 && carpet.x - hw < t.x + t.w * 1.18) {
+                            if (carpet.y - hh < t.gapY - t.gapH / 2 - domeH * 0.45) hit = true;
+                            if (carpet.y + hh > t.gapY + t.gapH / 2 + domeH * 0.45) hit = true;
+                        }
+                    }
+                    for (let i = gems.length - 1; i >= 0; i--) {
+                        const g = gems[i];
+                        g.x -= speed * dt;
+                        if (g.x < -30) { gems.splice(i, 1); continue; }
+                        if (!g.taken) {
+                            const dx = g.x - carpet.x, dy = g.y - carpet.y;
+                            const rr = g.r + carpet.w * 0.34;
+                            if (dx * dx + dy * dy < rr * rr) {
+                                g.taken = true;
+                                gemCount++;
+                                burst(g.x, g.y, 14, 6, '255,220,110');
+                                hud();
+                            }
+                        }
+                    }
+                    if (hit || carpet.y + hh > gY) crash();
+                } else {
+                    // crashed: the carpet drops to the sand
+                    carpet.vy = Math.min(carpet.vy + GRAVITY * dt, MAX_FALL);
+                    carpet.y = Math.min(carpet.y + carpet.vy * dt, gY - hh);
+                }
+                stepSparks(dt);
+            }
+
+            // ---------- drawing ----------
+            function drawCity(city, factor, color, baseY, lit) {
+                const off = (bgPos * factor) % city.span;
+                ctx.fillStyle = color;
+                for (let rep = 0; rep * city.span - off < W + 120; rep++) {
+                    for (let i = 0; i < city.list.length; i++) {
+                        const b = city.list[i];
+                        const x = b.x + rep * city.span - off;
+                        if (x > W + 120 || x + b.w < -120) continue;
+                        const top = baseY - b.h;
+                        const cx = x + b.w / 2;
+                        if (b.type === 'minaret') {
+                            const mw = b.w * 0.35;
+                            ctx.fillRect(cx - mw / 2, baseY - b.h * 1.5, mw, b.h * 1.5);
+                            ctx.beginPath();
+                            ctx.moveTo(cx - mw * 0.8, baseY - b.h * 1.5);
+                            ctx.lineTo(cx, baseY - b.h * 1.5 - mw * 1.8);
+                            ctx.lineTo(cx + mw * 0.8, baseY - b.h * 1.5);
+                            ctx.closePath();
+                            ctx.fill();
+                        } else {
+                            ctx.fillRect(x, top, b.w, b.h);
+                            if (b.type === 'dome') {
+                                ctx.beginPath();
+                                ctx.arc(cx, top, b.w * 0.42, Math.PI, 0);
+                                ctx.fill();
+                                ctx.fillRect(cx - 1, top - b.w * 0.42 - 10, 2, 10);
+                            }
+                        }
+                        if (lit && b.type !== 'minaret') {
+                            ctx.fillStyle = 'rgba(255, 200, 90, 0.65)';
+                            ctx.fillRect(x + b.w * 0.25, top + 16, 5, 8);
+                            ctx.fillRect(x + b.w * 0.6, top + 34, 5, 8);
+                            ctx.fillStyle = color;
+                        }
+                    }
+                }
+            }
+
+            function dome(cx, baseY, w, h, dir) {
+                // dir 1: the tip points up (bottom tower), dir -1: the tip points down (top tower)
+                const bw = w * 0.68;
+                ctx.fillStyle = '#f2b632';
+                ctx.beginPath();
+                ctx.moveTo(cx - bw, baseY);
+                ctx.bezierCurveTo(cx - bw * 1.25, baseY - dir * h * 0.55, cx - bw * 0.25, baseY - dir * h * 0.8, cx, baseY - dir * h);
+                ctx.bezierCurveTo(cx + bw * 0.25, baseY - dir * h * 0.8, cx + bw * 1.25, baseY - dir * h * 0.55, cx + bw, baseY);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+                ctx.beginPath();
+                ctx.ellipse(cx - bw * 0.3, baseY - dir * h * 0.4, bw * 0.12, h * 0.18, 0, 0, 6.283);
+                ctx.fill();
+            }
+
+            function drawTower(t) {
+                const x = t.x, w = t.w, cx = x + w / 2;
+                const tipTop = t.gapY - t.gapH / 2;
+                const tipBot = t.gapY + t.gapH / 2;
+                const domeH = w * 0.75;
+                const gY = groundY();
+                const body = ctx.createLinearGradient(x, 0, x + w, 0);
+                body.addColorStop(0, '#8f0f1e');
+                body.addColorStop(0.5, '#e0283a');
+                body.addColorStop(1, '#8f0f1e');
+                ctx.fillStyle = body;
+                ctx.fillRect(x, -4, w, tipTop - domeH + 4);
+                ctx.fillRect(x, tipBot + domeH, w, gY - (tipBot + domeH));
+                ctx.fillStyle = '#f2b632';
+                for (let y = tipTop - domeH - 14; y > -10; y -= 46) ctx.fillRect(x - 3, y, w + 6, 6);
+                for (let y = tipBot + domeH + 8; y < gY; y += 46) ctx.fillRect(x - 3, y, w + 6, 6);
+                dome(cx, tipTop - domeH, w, domeH, -1);
+                dome(cx, tipBot + domeH, w, domeH, 1);
+            }
+
+            function drawGem(g, t) {
+                const y = g.y + Math.sin(t / 300 + g.ph) * 4;
+                const r = g.r;
+                const glow = ctx.createRadialGradient(g.x, y, 0, g.x, y, r * 2.6);
+                glow.addColorStop(0, 'rgba(255, 210, 90, 0.55)');
+                glow.addColorStop(1, 'rgba(255, 210, 90, 0)');
+                ctx.fillStyle = glow;
+                ctx.fillRect(g.x - r * 2.6, y - r * 2.6, r * 5.2, r * 5.2);
+                ctx.fillStyle = '#f0a81e';
+                ctx.beginPath();
+                ctx.moveTo(g.x, y - r * 1.2); ctx.lineTo(g.x, y + r * 1.2); ctx.lineTo(g.x - r, y);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#ffd25a';
+                ctx.beginPath();
+                ctx.moveTo(g.x, y - r * 1.2); ctx.lineTo(g.x + r, y); ctx.lineTo(g.x, y + r * 1.2);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.beginPath();
+                ctx.moveTo(g.x, y - r * 1.2); ctx.lineTo(g.x + r * 0.45, y - r * 0.3); ctx.lineTo(g.x, y - r * 0.1);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            function drawCarpet(t) {
+                const w = carpet.w, h = carpet.h;
+                const tilt = state === 'over' ? 0.5 : Math.max(-0.35, Math.min(0.45, carpet.vy * 0.06));
+                const wave = function (x) { return Math.sin(x * 0.11 + t / 130) * h * 0.14; };
+                ctx.save();
+                ctx.translate(carpet.x, carpet.y);
+                ctx.rotate(tilt);
+
+                const steps = 14;
+                ctx.beginPath();
+                for (let i = 0; i <= steps; i++) {
+                    const x = -w / 2 + (w * i) / steps;
+                    if (i) ctx.lineTo(x, -h / 2 + wave(x)); else ctx.moveTo(x, -h / 2 + wave(x));
+                }
+                for (let i = steps; i >= 0; i--) {
+                    const x = -w / 2 + (w * i) / steps;
+                    ctx.lineTo(x, h / 2 + wave(x + 40));
+                }
+                ctx.closePath();
+                const fill = ctx.createLinearGradient(0, -h / 2, 0, h / 2);
+                fill.addColorStop(0, '#e0283a');
+                fill.addColorStop(1, '#8f0f1e');
+                ctx.fillStyle = fill;
+                ctx.fill();
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = '#f2b632';
+                ctx.stroke();
+
+                ctx.fillStyle = '#ffd25a';
+                for (let k = -1; k <= 1; k++) {
+                    const dx = k * w * 0.22, dy = wave(dx) * 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(dx, dy - h * 0.22); ctx.lineTo(dx + h * 0.22, dy);
+                    ctx.lineTo(dx, dy + h * 0.22); ctx.lineTo(dx - h * 0.22, dy);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+
+                ctx.strokeStyle = '#f2b632';
+                ctx.lineWidth = 2;
+                for (let k = 0; k < 4; k++) {
+                    const ty = -h / 2 + (h * (k + 0.5)) / 4;
+                    ctx.beginPath();
+                    ctx.moveTo(-w / 2, ty + wave(-w / 2)); ctx.lineTo(-w / 2 - 7, ty + wave(-w / 2) + 2);
+                    ctx.moveTo(w / 2, ty + wave(w / 2)); ctx.lineTo(w / 2 + 7, ty + wave(w / 2) + 2);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+
+            function draw(t) {
+                const gY = groundY(), hz = horizonY();
+
+                // night sky fading to a golden horizon
+                const sky = ctx.createLinearGradient(0, 0, 0, hz);
+                sky.addColorStop(0, '#12040a');
+                sky.addColorStop(0.45, '#3a0a16');
+                sky.addColorStop(0.8, '#7a1424');
+                sky.addColorStop(1, '#f0b04a');
+                ctx.fillStyle = sky;
+                ctx.fillRect(0, 0, W, hz + 2);
+
+                for (let i = 0; i < stars.length; i++) {
+                    const st = stars[i];
+                    const x = (((st.x * W - bgPos * 0.03) % W) + W) % W;
+                    ctx.fillStyle = 'rgba(255, 244, 214, ' + (0.4 + 0.6 * (0.5 + 0.5 * Math.sin(t / 500 + st.ph))).toFixed(2) + ')';
+                    ctx.fillRect(x, st.y * hz, st.r * 1.4, st.r * 1.4);
+                }
+
+                // moon
+                const mx = W * 0.8, my = hz * 0.28, mr = small() ? 24 : 36;
+                const mg = ctx.createRadialGradient(mx, my, mr * 0.6, mx, my, mr * 3);
+                mg.addColorStop(0, 'rgba(255, 236, 170, 0.35)');
+                mg.addColorStop(1, 'rgba(255, 236, 170, 0)');
+                ctx.fillStyle = mg;
+                ctx.fillRect(mx - mr * 3, my - mr * 3, mr * 6, mr * 6);
+                ctx.fillStyle = '#fff1c4';
+                ctx.beginPath(); ctx.arc(mx, my, mr, 0, 6.283); ctx.fill();
+
+                drawCity(farCity, 0.12, '#8a1a2c', hz + 2, false);
+                drawCity(nearCity, 0.3, '#2a0710', hz + 10, true);
+
+                // golden dunes
+                const sand = ctx.createLinearGradient(0, hz, 0, gY);
+                sand.addColorStop(0, '#d79a33');
+                sand.addColorStop(1, '#6a3a12');
+                ctx.fillStyle = sand;
+                ctx.beginPath();
+                ctx.moveTo(0, gY);
+                for (let x = 0; x <= W + 12; x += 12) {
+                    ctx.lineTo(x, hz + 12 + Math.sin((x + bgPos * 0.5) / 90) * 7 + Math.sin((x + bgPos * 0.5) / 37) * 3);
+                }
+                ctx.lineTo(W, gY);
+                ctx.closePath();
+                ctx.fill();
+                ctx.fillStyle = '#4a2a0c';
+                ctx.fillRect(0, gY, W, H - gY);
+                ctx.fillStyle = '#f2b632';
+                ctx.fillRect(0, gY, W, 3);
+
+                for (let i = 0; i < towers.length; i++) drawTower(towers[i]);
+                for (let i = 0; i < gems.length; i++) if (!gems[i].taken) drawGem(gems[i], t);
+
+                drawCarpet(t);
+
+                ctx.globalCompositeOperation = 'lighter';
+                for (let i = 0; i < sparks.length; i++) {
+                    const p = sparks[i];
+                    const a = Math.max(0, p.life / p.max);
+                    ctx.fillStyle = 'rgba(' + p.c + ',' + (a * 0.9).toFixed(2) + ')';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.s * a + 0.5, 0, 6.283);
+                    ctx.fill();
+                }
+                ctx.globalCompositeOperation = 'source-over';
+            }
+
+            function frame(t) {
+                if (!running) return;
+                const dt = Math.min((t - last) / 16.67, 3);
+                last = t;
+                step(dt);
+                draw(t);
+                requestAnimationFrame(frame);
+            }
+
+            function start() {
+                if (running) return;
+                running = true;
+                last = performance.now();
+                requestAnimationFrame(frame);
+            }
+
+            canvas.addEventListener('pointerdown', flap);
+            resetBtn.addEventListener('click', build);
+
+            // space / up arrow also fly, but only while this section is on screen
+            document.addEventListener('keydown', function (e) {
+                if (!keysOn) return;
+                if (e.code === 'Space' || e.code === 'ArrowUp') {
+                    e.preventDefault();
+                    if (!e.repeat) flap();
+                }
+            });
+
+            // rebuild only when the width changes (phone address bars change the height while scrolling)
+            window.addEventListener('resize', function () {
+                if (canvas.clientWidth !== lastW) build();
+            });
+
+            // only animate while the section is on screen
+            new IntersectionObserver(function (entries) {
+                const e = entries[0];
+                keysOn = e.intersectionRatio >= 0.55;
+                if (e.isIntersecting) start();
+                else running = false;
+            }, { threshold: [0.05, 0.55] }).observe(section);
+
+            build();
+        })();
+    </script>
+ 
+</body>
+ 
+</html>
