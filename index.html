@@ -262,35 +262,56 @@ body {
 
 /* Mobile responsive */
 @media (max-width: 768px) {
+    /* ONE SCREEN: the whole first section (text + moving posters) fits the phone screen,
+       so the scrolling effect is fully visible without scrolling the page.
+       100svh = the visible screen height (excludes the browser address bar). */
     .movie-section {
         flex-direction: column;
         align-items: flex-start;
-        padding: 70px 6% 30px;
-        gap: 30px;
+        height: 100vh;
+        height: 100svh;
+        min-height: 540px;
+        padding: 64px 6% 0;
+        gap: 12px;
     }
 
     .content {
+        flex: none;
         max-width: 100%;
+        width: 100%;
     }
 
+    /* the gallery takes all the space that is left under the text */
     .gallery {
-        flex: none;
+        flex: 1 1 0;
+        min-height: 0;
+        height: auto;
         width: 100%;
         max-width: none;
-        height: 55vh;
-        min-height: 350px;
         gap: 10px;
     }
 
     .image-track img {
-        height: 190px;
+        height: 140px;
         margin-bottom: 10px;
     }
+
+    /* smaller text + buttons so everything fits */
+    .tagline { font-size: 11px; letter-spacing: 3px; margin-bottom: 8px; }
+    .content .title-mix { margin-bottom: 10px; }
+    .content .title-mix .script { font-size: clamp(22px, 6.5vw, 28px); }
+    .content .title-mix .bold { font-size: clamp(34px, 11vw, 46px); overflow-wrap: anywhere; }
+    .description { font-size: 14px; line-height: 1.5; max-width: none; margin-bottom: 14px; }
+    .main-buttons { gap: 10px; }
+    .explore-btn, .mylist-btn { padding: 11px 18px; font-size: 14px; }
+    .movie-buttons { margin-top: 10px; gap: 10px; }
+    .movie-link-btn { padding: 9px 14px; font-size: 14px; }
 
     /* scale with the screen width so long words never push the page wider than the phone */
     .title-mix .bold { font-size: clamp(36px, 13vw, 56px); overflow-wrap: anywhere; }
     .title-mix .script { font-size: clamp(22px, 7vw, 26px); }
 }
+
 
 @media (prefers-reduced-motion: reduce) {
     .image-track {
@@ -662,22 +683,51 @@ body {
 }
 
 @media (max-width: 900px) {
-    /* taller section so the poster row never overlaps the movie details on short phones */
-    .tr-section { height: auto; min-height: 820px; }
-    .tr-heading { left: 6%; top: 80px; }
-    .tr-details { left: 6%; top: 115px; width: 88%; }
-    .tr-number { font-size: 50px; }
-    .tr-title { font-size: 26px; }
-    .tr-label { margin-bottom: 10px; }
+    /* ONE SCREEN: heading, details, posters and arrows are stacked in a column that
+       fills the screen exactly (no more overlapping, no page scrolling to see it all) */
+    .tr-section {
+        height: 100vh;
+        height: 100svh;
+        min-height: 580px;
+        display: flex;
+        flex-direction: column;
+        padding: 70px 6% 16px;
+    }
+    .tr-heading, .tr-details, .tr-arrows, .tr-window {
+        position: relative;
+        left: auto; right: auto; top: auto; bottom: auto;
+    }
+    .tr-heading { margin-bottom: 10px; }
+    .tr-details { width: 100%; }
+    .tr-label { display: none; }
+    .tr-number { font-size: 42px; }
+    .tr-title { font-size: 22px; }
+    .tr-title-row { gap: 12px; }
+    .tr-stars { margin: 6px 0; }
+    .tr-schedule-title { margin: 14px 0 8px; }
+    .tr-times span { padding: 3px 12px; margin: 0 6px 6px 0; }
+    .tr-buttons { margin-top: 10px; }
+    .tr-book, .tr-more { padding: 9px 18px; }
+
+    /* poster strip sits at the bottom, edge to edge */
+    .tr-section { --ph: clamp(150px, 26vh, 270px); } /* poster height grows on taller phones */
     .tr-window {
-        left: 0;
-        bottom: 80px;
-        height: 230px;
+        order: 2;
+        margin: auto -6% 0;
+        height: calc(var(--ph) + 35px);
+        flex-shrink: 0;
         border-left: none;
         border-top: 2px solid white;
     }
-    .tr-poster { width: 130px; height: 190px; }
-    .tr-arrows { left: 6%; bottom: 25px; }
+    .tr-poster { height: var(--ph); width: calc(var(--ph) * 2 / 3); margin-top: 22px; }
+    .tr-poster .name { font-size: 11px; }
+    .tr-arrows { order: 3; margin-top: 12px; flex-shrink: 0; }
+}
+
+/* On phones each section settles into place as you scroll, so it fills the screen */
+@media (max-width: 900px) {
+    html { scroll-snap-type: y proximity; }
+    #home, #trending, #studios { scroll-snap-align: start; }
 }
 
 /* =========================================================
@@ -772,13 +822,13 @@ body {
 
     <section class="movie-section" id="home">
         <div class="content">
-            <p class="tagline">YOUR NEXT OBSESSION</p>
+            <p class="tagline">NEXT OBSESSION</p>
             <h1 class="title-mix"><span class="script">Stories</span><span class="bold">that never end.</span></h1>
             <p class="description">
-                Explore worlds, discover characters, and get lost in cinema.
+                Get lost in cinema.
             </p>
             <div class="main-buttons">
-                <a href="#movies" class="explore-btn">Explore Movies ↗</a>
+                <a href="#movies" class="explore-btn">Explore ↗</a>
                 <a href="mylist.html" class="mylist-btn">+ My List</a>
             </div>
 
@@ -845,10 +895,10 @@ body {
             </div>
             <div class="tr-stars" id="trStars"></div>
             <div class="tr-tags" id="trTags"></div>
-            <p class="tr-schedule-title">Session schedule</p>
+            <p class="tr-schedule-title">Showtimes</p>
             <div class="tr-times" id="trTimes"></div>
             <div class="tr-buttons">
-                <button class="tr-book">Book Now</button>
+                <button class="tr-book">Book</button>
                 <button class="tr-more">More ›</button>
             </div>
         </div>
@@ -865,9 +915,9 @@ body {
 
     <!-- ================= SECTION 3: STUDIOS ================= -->
     <section class="studios-section" id="studios">
-        <p class="tagline">BROWSE BY STUDIO</p>
-        <h2 class="title-mix"><span class="script">Your favourite</span><span class="bold">universes.</span></h2>
-        <p class="studios-sub">Jump into the worlds built by the biggest studios in cinema.</p>
+        <p class="tagline">STUDIOS</p>
+        <h2 class="title-mix"><span class="script">Pick your</span><span class="bold">universe.</span></h2>
+        <p class="studios-sub">Jump into the biggest studio worlds.</p>
 
 <div class="studio-grid">
     <a href="studio.html?id=marvel"      class="studio-card" style="--img:url('marvel.jpg')"      aria-label="Marvel"></a>
