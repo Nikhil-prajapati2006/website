@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <title>Explore - MovieLab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Shadows+Into+Light&family=Anton&display=swap" rel="stylesheet">
+    <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+button, select { font-family: inherit; }
+
+:root {
+    --bg: #000000;
+    --bg-soft: #151515;
+    --accent: #E57130;
+    --accent-dark: #C95E22;
+    --text: #F7F7F7;
+    --muted: #D1D1D1;
+    --font: 'Outfit', Arial, sans-serif;
+    --font-script: 'Shadows Into Light', cursive;
+    --font-display: 'Anton', 'Arial Narrow', Impact, sans-serif;
+}
+
+body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+a { color: inherit; text-decoration: none; }
+
+/* ---------- NAVBAR (filters live here) ---------- */
+.nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: 18px;
+    padding: 14px 6%;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.logo { font-family: var(--font-display); font-size: 24px; letter-spacing: 1px; color: var(--accent); white-space: nowrap; }
+.logo small { font-family: var(--font); font-size: 13px; color: var(--muted); margin-left: 8px; letter-spacing: 0; }
+.filters { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+.field { display: flex; align-items: center; gap: 8px; }
+.field label { font-size: 12px; letter-spacing: 2px; color: var(--muted); }
+.field select {
+    min-width: 140px;
+    padding: 9px 34px 9px 14px;
+    background: var(--bg-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23E57130' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 12px center;
+    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 30px;
+    font-size: 14px;
+    cursor: pointer;
+    appearance: none; -webkit-appearance: none;
+    transition: border-color 0.25s;
+}
+.field select:hover, .field select:focus { border-color: var(--accent); outline: none; }
+.field select option { background: #151515; color: #F7F7F7; }
+.reset {
+    padding: 9px 16px; background: none; color: var(--muted);
+    border: 1px solid transparent; border-radius: 30px; font-size: 14px; cursor: pointer;
+    transition: color 0.25s;
+}
+.reset:hover { color: var(--accent); }
+.reset[hidden] { display: none; }
+
+/* ---------- PAGE ---------- */
+.page { padding: 40px 6% 90px; }
+.head { margin-bottom: 30px; }
+.head .script { display: block; font-family: var(--font-script); font-size: clamp(24px, 3vw, 36px); color: var(--accent); }
+.head h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(44px, 7vw, 88px); line-height: 1; text-transform: uppercase; letter-spacing: 1px; }
+.count { color: var(--accent); font-size: 13px; letter-spacing: 3px; margin-top: 14px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 22px; }
+.movie { position: relative; display: block; transition: transform 0.3s; }
+.movie:hover { transform: translateY(-6px); }
+.poster {
+    width: 100%; aspect-ratio: 2 / 3; object-fit: cover; display: flex; align-items: center; justify-content: center;
+    border-radius: 10px; background: var(--bg-soft); border: 1px solid rgba(255, 255, 255, 0.08);
+    font-family: var(--font-display); font-size: 54px; color: var(--accent); overflow: hidden;
+    transition: border-color 0.3s;
+}
+.movie:hover .poster { border-color: var(--accent); }
+.movie h3 { font-size: 15px; margin-top: 10px; font-weight: 600; }
+.movie .sub { font-size: 12px; color: #9a9a9a; }
+
+.empty { padding: 50px 0; color: var(--muted); line-height: 1.8; }
+.empty button {
+    margin-top: 14px; padding: 10px 22px; background: var(--accent); color: #000; border: 0;
+    border-radius: 30px; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+
+@media (max-width: 760px) {
+    .nav { flex-wrap: wrap; gap: 10px 12px; padding: 12px 5%; }
+    .logo small { display: none; }
+    .filters { order: 3; width: 100%; margin-left: 0; gap: 8px; }
+    .field { flex: 1; min-width: 0; }
+    .field label { display: none; }
+    .field select { width: 100%; min-width: 0; padding: 9px 30px 9px 12px; font-size: 16px; }
+    .page { padding: 28px 5% 70px; }
+}
+@media (max-width: 640px) {
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+}
+    </style>
+</head>
+<body>
+
+    <nav class="nav">
+        <a href="index.html" class="logo" aria-label="Back to MovieLab home">MOVIELAB<small>&larr; Home</small></a>
+
+        <div class="filters">
+            <div class="field">
+                <label for="genreSel">GENRE</label>
+                <select id="genreSel" aria-label="Filter by genre"></select>
+            </div>
+            <div class="field">
+                <label for="yearSel">YEAR</label>
+                <select id="yearSel" aria-label="Filter by year"></select>
+            </div>
+            <button type="button" class="reset" id="resetBtn" hidden>Reset</button>
+        </div>
+
+    </nav>
+
+    <main class="page">
+        <div class="head">
+            <span class="script">Everything we have,</span>
+            <h1>All Movies</h1>
+            <div class="count" id="count"></div>
+        </div>
+        <div class="grid" id="grid"></div>
+    </main>
+
+    <script src="movies.js"></script>
+    <script>
+        function el(tag, className, text) {
+            var e = document.createElement(tag);
+            if (className) e.className = className;
+            if (text !== undefined) e.textContent = text;
+            return e;
+        }
+
+        var grid = document.getElementById("grid");
+        var genreSel = document.getElementById("genreSel");
+        var yearSel = document.getElementById("yearSel");
+        var resetBtn = document.getElementById("resetBtn");
+        var countEl = document.getElementById("count");
+
+        // Did movies.js load? (an error inside it leaves "movies" unusable)
+        var moviesOK = false;
+        try { moviesOK = typeof movies !== "undefined" && !!movies && !(movies instanceof Element); } catch (e) { }
+
+
+        if (!moviesOK) {
+            grid.appendChild(el("div", "empty", "The movie list could not be loaded. Keep movies.js in the same folder as this page, then press F12 and read the red error in the Console."));
+        } else {
+            // newest first
+            var keys = Object.keys(movies).sort(function (a, b) {
+                return (parseInt(movies[b].pills && movies[b].pills[0], 10) || 0) -
+                       (parseInt(movies[a].pills && movies[a].pills[0], 10) || 0);
+            });
+            function yearOf(k) { return (movies[k].pills && movies[k].pills[0]) || ""; }
+
+            // build the filter lists from the real movies
+            var genreCount = {}, years = {};
+            keys.forEach(function (k) {
+                (movies[k].genres || []).forEach(function (g) { genreCount[g] = (genreCount[g] || 0) + 1; });
+                if (yearOf(k)) years[yearOf(k)] = true;
+            });
+            function opt(sel, value, label) {
+                var o = document.createElement("option");
+                o.value = value; o.textContent = label; sel.appendChild(o);
+            }
+            opt(genreSel, "", "All genres");
+            Object.keys(genreCount).sort().forEach(function (g) { opt(genreSel, g, g + " (" + genreCount[g] + ")"); });
+            opt(yearSel, "", "All years");
+            Object.keys(years).sort(function (a, b) { return b - a; }).forEach(function (y) { opt(yearSel, y, y); });
+
+            // start from the address:  explore.html?genre=Action&year=2023
+            var q = new URLSearchParams(location.search);
+            if (q.get("genre") && genreCount[q.get("genre")]) genreSel.value = q.get("genre");
+            if (q.get("year") && years[q.get("year")]) yearSel.value = q.get("year");
+
+            function render() {
+                var g = genreSel.value, y = yearSel.value;
+                var list = keys.filter(function (k) {
+                    var m = movies[k];
+                    return (!g || (m.genres || []).indexOf(g) !== -1) && (!y || yearOf(k) === y);
+                });
+                resetBtn.hidden = !(g || y);
+                countEl.textContent = list.length + (list.length === 1 ? " MOVIE" : " MOVIES") +
+                    (g ? " · " + g.toUpperCase() : "") + (y ? " · " + y : "");
+
+                grid.textContent = "";
+                if (!list.length) {
+                    var box = el("div", "empty", "No movie matches this genre and year together.");
+                    box.appendChild(document.createElement("br"));
+                    var b = el("button", "", "Clear filters");
+                    b.type = "button";
+                    b.onclick = reset;
+                    box.appendChild(b);
+                    grid.appendChild(box);
+                    return;
+                }
+
+                list.forEach(function (key) {
+                    var m = movies[key];
+                    var card = el("div", "movie");
+                    var a = el("a");
+                    a.href = "movie.html?id=" + encodeURIComponent(key);
+
+                    var poster;
+                    if (m.poster) {
+                        poster = el("img", "poster");
+                        poster.src = m.poster;
+                        poster.alt = m.title;
+                        poster.loading = "lazy";
+                        poster.onerror = function () { this.replaceWith(el("div", "poster", m.title.charAt(0))); };
+                    } else {
+                        poster = el("div", "poster", m.title.charAt(0));
+                    }
+                    a.appendChild(poster);
+                    a.appendChild(el("h3", "", m.title));
+                    a.appendChild(el("div", "sub", [yearOf(key), (m.genres || [])[0]].filter(Boolean).join(" · ")));
+                    card.appendChild(a);
+
+                    grid.appendChild(card);
+                });
+            }
+
+            function reset() { genreSel.value = ""; yearSel.value = ""; sync(); }
+            function sync() {
+                render();
+                var p = new URLSearchParams();
+                if (genreSel.value) p.set("genre", genreSel.value);
+                if (yearSel.value) p.set("year", yearSel.value);
+                try { history.replaceState(null, "", p.toString() ? "?" + p : location.pathname); } catch (e) { }
+            }
+            genreSel.onchange = sync;
+            yearSel.onchange = sync;
+            resetBtn.onclick = reset;
+            render();
+        }
+    </script>
+</body>
+</html>

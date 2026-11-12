@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio - MovieLab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Shadows+Into+Light&family=Anton&display=swap" rel="stylesheet">
+    <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+button { font-family: inherit; }
+
+:root {
+    --bg: #000000;
+    --bg-soft: #151515;
+    --accent: #E57130;
+    --font: 'Outfit', Arial, sans-serif;
+    --font-script: 'Shadows Into Light', cursive;
+    --font-display: 'Anton', 'Arial Narrow', Impact, sans-serif;
+}
+
+body {
+    background: var(--bg);
+    color: white;
+    font-family: var(--font);
+    min-height: 100vh;
+}
+
+.page { padding: 40px 8% 90px; }
+
+.back {
+    display: inline-block;
+    color: #D1D1D1;
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 50px;
+    transition: color 0.3s;
+}
+.back:hover { color: var(--accent); }
+
+.hero { margin-bottom: 50px; }
+.hero .script {
+    display: block;
+    font-family: var(--font-script);
+    font-size: clamp(26px, 3vw, 40px);
+    color: var(--accent);
+    margin-bottom: 4px;
+}
+.hero h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(56px, 9vw, 130px);
+    line-height: 0.95;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #F7F7F7;
+}
+.hero p { color: #aaa; line-height: 1.8; max-width: 460px; margin-top: 18px; }
+.count { color: var(--accent); font-size: 13px; letter-spacing: 3px; margin-top: 22px; }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 22px;
+}
+.movie {
+    display: block;
+    color: white;
+    text-decoration: none;
+    transition: transform 0.3s;
+}
+.movie:hover { transform: translateY(-6px); }
+.movie .poster {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: 10px;
+    background: var(--bg-soft);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 54px;
+    color: var(--accent);
+    overflow: hidden;
+    transition: border-color 0.3s;
+}
+.movie:hover .poster { border-color: var(--accent); }
+.movie h3 { font-size: 15px; margin-top: 10px; }
+.movie span { font-size: 12px; color: #9a9a9a; }
+
+.empty {
+    padding: 40px 0;
+    color: #aaa;
+    line-height: 1.8;
+    max-width: 520px;
+}
+.empty code { color: var(--accent); }
+
+.others { margin-top: 70px; }
+.others h2 { font-size: 13px; letter-spacing: 3px; color: var(--accent); margin-bottom: 16px; font-weight: 400; }
+.others a {
+    display: inline-block;
+    margin: 0 8px 8px 0;
+    padding: 8px 16px;
+    color: #ddd;
+    text-decoration: none;
+    font-size: 13px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 30px;
+    transition: border-color 0.3s, color 0.3s;
+}
+.others a:hover, .others a.current { border-color: var(--accent); color: var(--accent); }
+
+@media (max-width: 640px) {
+    .page { padding: 30px 6% 70px; }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+}
+    </style>
+</head>
+<body>
+
+    <div class="page">
+        <a href="index.html#studios" class="back">&larr; Back to home</a>
+
+        <div class="hero">
+            <span class="script" id="studioScript">Studio</span>
+            <h1 id="studioName">Loading</h1>
+            <p id="studioAbout"></p>
+            <div class="count" id="studioCount"></div>
+        </div>
+
+        <div class="grid" id="grid"></div>
+
+        <div class="others">
+            <h2>OTHER STUDIOS</h2>
+            <div id="otherStudios"></div>
+        </div>
+    </div>
+
+    <!-- all your movies live in movies.js (same folder as this file) -->
+    <script src="movies.js"></script>
+
+    <script>
+        // =====================================================================
+        //  STUDIOS: which movies belong to each studio.
+        //  The names in "movies: [...]" are the keys from movies.js
+        //  (the word before the colon, e.g. spiderman2).
+        //  TO ADD A MOVIE TO A STUDIO: just add its key to that studio's list.
+        //  Each movie is listed in ONE studio only.
+        // =====================================================================
+        var studios = {
+            marvel: {
+                name: "Marvel",
+                script: "Heroes & the",
+                about: "Heroes, villains and the worlds of the Marvel Cinematic Universe.",
+                movies: ["blackwidow", "thunderbolts", "spidermanhomecoming", "spidermanfarfromhome", "deadpoolwolverine"]
+            },
+            dc: {
+                name: "DC",
+                script: "Gods, knights &",
+                about: "Legends from Gotham, Metropolis and beyond.",
+                movies: ["wonderwoman", "shazam", "manofsteel", "superman2025", "joker", "thedarkknight", "thedarkknightrises"]
+            },
+            warner: {
+                name: "Warner Bros.",
+                script: "Blockbusters &",
+                about: "Big-screen blockbusters and modern classics.",
+                movies: ["f1", "bladerunner2049", "prisoners", "it", "itchaptertwo", "twisters", "barbie", "theintern"]
+            },
+            disney: {
+                name: "Disney",
+                script: "Magic for",
+                about: "Magic, adventure and stories for every age.",
+                movies: ["aladdin"]
+            },
+            pixar: {
+                name: "Pixar",
+                script: "Stories with",
+                about: "Animated stories with a lot of heart.",
+                movies: ["cars", "cars2", "cars3", "luca"]
+            },
+            universal: {
+                name: "Universal",
+                script: "Epic",
+                about: "Epic adventures from one of the oldest studios in cinema.",
+                movies: ["oppenheimer", "thefallguy", "brucealmighty", "michael"]
+            },
+            netflix: {
+                name: "Netflix",
+                script: "Originals &",
+                about: "Netflix originals made for the screen at home.",
+                movies: ["damsel", "rebelmoon1", "rebelmoon2", "warmachine"]
+            },
+            sony: {
+                name: "Sony Pictures",
+                script: "Web-slingers &",
+                about: "From Spider-Man to Bloodshot.",
+                movies: ["spiderman", "spiderman2", "spiderman3", "bloodshot", "thesocialnetwork", "onceuponatimeinhollywood"]
+            },
+            paramount: {
+                name: "Paramount",
+                script: "Iconic",
+                about: "Iconic franchises and unforgettable stories.",
+                movies: ["topgunmaverick", "interstellar", "thewolfofwallstreet", "dungeonsanddragons", "sonic", "sonic2", "sonic3", "arrival", "smile"]
+            },
+            fox: {
+                name: "Fox Studio",
+                script: "20TH CENTURY",
+                about: "Fox Searchlight Pictures",
+                movies: ["deadpool", "deadpool2", "fordvsferrari", "freeguy", "predatorbadlands"]
+            },
+            amazon: {
+                name: "Amazon MGM",
+                script: "Big stories,",
+                about: "Big-screen events from Amazon MGM Studios.",
+                movies: ["mastersoftheuniverse", "projecthailmary"]
+            },
+            lionsgate: {
+                name: "Lionsgate",
+                script: "Action with",
+                about: "Hard-hitting action, from John Wick to Ballerina.",
+                movies: ["johnwick", "johnwick2", "johnwick3", "johnwick4", "ballerina", "perksofbeingawallflower"]
+            },
+            toho: {
+                name: "Toho",
+                script: "King of the",
+                about: "The Japanese studio behind Godzilla.",
+                movies: ["godzillaminusone"]
+            },
+            independent: {
+                name: "Independent",
+                script: "Made",
+                about: "Films made outside the big studios.",
+                movies: ["blackberry", "thefounder", "ghosted"]
+            }
+        };
+
+        // ---------------------------------------------------------------------
+        function el(tag, className, text) {
+            var e = document.createElement(tag);
+            if (className) e.className = className;
+            if (text !== undefined) e.textContent = text;
+            return e;
+        }
+
+        // which studio is in the address?   studio.html?id=marvel
+        var id = (new URLSearchParams(location.search).get("id") || "").toLowerCase();
+        var studio = studios[id];
+
+        var grid = document.getElementById("grid");
+
+        if (!studio) {
+            document.getElementById("studioName").textContent = "Not found";
+            document.getElementById("studioScript").textContent = "Oops";
+            grid.appendChild(el("div", "empty", "We could not find that studio. Pick one from the list below."));
+        } else {
+            document.title = studio.name + " - MovieLab";
+            document.getElementById("studioName").textContent = studio.name;
+            document.getElementById("studioScript").textContent = studio.script;
+            document.getElementById("studioAbout").textContent = studio.about;
+
+            // Did movies.js load? If it has an error (for example a photo name that is not
+            // defined), the browser never creates "movies" and every studio looks empty.
+            var moviesOK = false;
+            try { moviesOK = typeof movies !== "undefined" && !!movies; } catch (e) { moviesOK = false; }
+
+            // keep only the keys that really exist in movies.js
+            var list = studio.movies.filter(function (key) {
+                return moviesOK && movies[key];
+            });
+            document.getElementById("studioCount").textContent =
+                list.length + (list.length === 1 ? " MOVIE" : " MOVIES");
+
+            if (!moviesOK) {
+                grid.appendChild(el("div", "empty",
+                    "The movie list could not be loaded. Press F12, open the Console tab and read the red error from movies.js (it usually names a photo variable that is missing)."));
+            } else if (!list.length) {
+                var empty = el("div", "empty");
+                empty.appendChild(document.createTextNode("No movies here yet. Add movie keys from movies.js to the "));
+                empty.appendChild(el("code", "", id));
+                empty.appendChild(document.createTextNode(" list in studio.html."));
+                grid.appendChild(empty);
+            }
+
+            list.forEach(function (key) {
+                var m = movies[key];
+                var a = el("a", "movie");
+                a.href = "movie.html?id=" + key;
+
+                var poster;
+                if (m.poster) {
+                    poster = el("img", "poster");
+                    poster.src = m.poster;
+                    poster.alt = m.title;
+                    poster.onerror = function () {
+                        var f = el("div", "poster", m.title.charAt(0));
+                        this.replaceWith(f);
+                    };
+                } else {
+                    poster = el("div", "poster", m.title.charAt(0));
+                }
+                a.appendChild(poster);
+                a.appendChild(el("h3", "", m.title));
+                a.appendChild(el("span", "", (m.pills && m.pills[0]) || ""));
+                grid.appendChild(a);
+            });
+        }
+
+        // links to the other studios
+        var others = document.getElementById("otherStudios");
+        Object.keys(studios).forEach(function (key) {
+            var a = el("a", key === id ? "current" : "", studios[key].name);
+            a.href = "studio.html?id=" + key;
+            others.appendChild(a);
+        });
+    </script>
+</body>
+</html>
