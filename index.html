@@ -215,20 +215,11 @@ body {
     transform: translateY(-3px);
 }
 
-/* Posters that open a movie page (every other poster stays a plain image) */
-.image-track a {
-    display: block;
-    flex-shrink: 0;
-    cursor: pointer;
-}
-
-.image-track a img {
-    transition: filter 0.3s, transform 0.3s;
-}
-
-.image-track a:hover img {
-    filter: brightness(1.15);
-    transform: scale(1.03);
+/* The moving pictures are only decoration: not clickable */
+.image-track img {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 /* Second column moves in the opposite direction */
@@ -551,195 +542,186 @@ body {
 .search-request:hover:not(:disabled) { background: var(--accent); color: #111; }
 .search-request:disabled { opacity: 0.6; cursor: default; }
 
-/* Posters without a movie page are clickable too (they show the popup) */
-.image-track > img { cursor: pointer; }
 
 /* =========================================================
-   TRENDING SECTION (section 2)
+   TRENDING SECTION (section 2): 3D poster carousel
+   The poster in the middle is the active movie. Posters on both sides
+   tilt away. The page background is a blurred copy of the active poster,
+   and the movie details sit centered under the carousel.
    ========================================================= */
 .tr-section {
+    --cw: clamp(170px, 21vw, 270px);   /* width of the centre poster */
     position: relative;
-    height: 100vh;
-    min-height: 640px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 96px 6% 48px;
     overflow: hidden;
+    text-align: center;
     background: var(--bg);
 }
 
-.tr-backdrop, .tr-video {
+/* blurred background (two layers so it fades smoothly between movies) */
+.tr-bg {
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
+    inset: -60px;
     background-size: cover;
     background-position: center;
+    filter: blur(38px) brightness(0.5) saturate(1.25);
+    opacity: 0;
+    transition: opacity 0.9s;
+    z-index: 0;
 }
-.tr-video { display: none; }
-
-/* Zoom-in effect: every time the movie changes, the background fades in at normal
-   size and keeps zooming in slowly while that movie is shown */
-.tr-backdrop, .tr-video { transform-origin: center; will-change: transform, opacity; }
-.tr-backdrop.zoom, .tr-video.zoom {
-    animation:
-        trFadeIn 0.7s ease-out both,
-        trZoomIn 6s cubic-bezier(0.25, 0.1, 0.25, 1) both;
-}
-@keyframes trFadeIn {
-    from { opacity: 0.2; }
-    to   { opacity: 1; }
-}
-@keyframes trZoomIn {
-    from { transform: scale(1); }
-    to   { transform: scale(1.25); }  /* change 1.25 for a stronger or softer zoom */
-}
-@media (prefers-reduced-motion: reduce) {
-    .tr-backdrop.zoom, .tr-video.zoom { animation: none; }
-}
-
-.tr-shade {
+.tr-bg.on { opacity: 1; }
+.tr-veil {
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, rgba(0,0,0,0.9), rgba(0,0,0,0.3));
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(to bottom, var(--bg) 0%, transparent 22%, transparent 62%, var(--bg) 100%);
 }
 
-.tr-heading {
+.tr-head { position: relative; z-index: 3; }
+.tr-head .tagline { margin-bottom: 10px; }
+.tr-head .title-mix { margin-bottom: 0; }
+.tr-head .title-mix .bold { font-size: clamp(36px, 5vw, 70px); }
+
+.tr-stage {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    height: calc(var(--cw) * 1.5 + 40px);
+    margin: 14px 0 22px;
+    perspective: 1300px;
+}
+.tr-card {
     position: absolute;
-    top: 85px;
-    left: 8%;
-    z-index: 2;
-    color: var(--accent);
-    letter-spacing: 4px;
-    font-size: 12px;
+    left: 50%;
+    top: 20px;
+    width: var(--cw);
+    aspect-ratio: 2 / 3;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    transition: transform 0.75s cubic-bezier(0.22, 0.8, 0.28, 1), opacity 0.5s, filter 0.5s, border-color 0.4s;
+    will-change: transform;
+}
+.tr-card.active {
+    cursor: default;
+    border-color: var(--accent);
+    box-shadow: 0 34px 80px rgba(0, 0, 0, 0.75), 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+/* name shown on a poster that has no image yet */
+.tr-card .nm {
+    width: 100%;
+    padding: 0 12px 18px;
+    font-family: var(--font-display);
+    font-size: clamp(20px, 2.2vw, 30px);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
 }
 
-.tr-details {
+.tr-arrow {
     position: absolute;
-    left: 8%;
-    top: 150px;
-    width: 450px;
-    z-index: 2;
+    top: 50%;
+    z-index: 30;
+    width: 46px; height: 46px;
+    margin-top: -23px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: #fff;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.3s, border-color 0.3s, color 0.3s;
 }
-.tr-label { font-size: 13px; margin-bottom: 25px; color: var(--muted); }
-.tr-title-row { display: flex; align-items: center; gap: 15px; }
-.tr-number { font-size: 80px; font-weight: 200; }
-.tr-title { font-size: 32px; }
-.tr-stars { color: var(--accent-2); margin: 10px 0; letter-spacing: 3px; }
+.tr-arrow:hover { background: var(--accent); border-color: var(--accent); color: #111; }
+.tr-prev { left: 0; }
+.tr-next { right: 0; }
+
+.tr-info { position: relative; z-index: 3; max-width: 560px; }
+.tr-info.swap { animation: trIn 0.6s ease both; }
+@keyframes trIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.tr-count { color: var(--accent); letter-spacing: 4px; font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+.tr-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: clamp(32px, 4.4vw, 60px);
+    line-height: 1;
+    margin-bottom: 10px;
+}
+.tr-stars { color: var(--accent-2); letter-spacing: 3px; margin-bottom: 12px; }
+.tr-tags { margin-bottom: 20px; }
 .tr-tags span {
     display: inline-block;
-    border: 1px solid gray;
-    padding: 2px 6px;
-    margin: 0 5px 5px 0;
-    font-size: 11px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 20px;
+    padding: 3px 12px;
+    margin: 0 4px 6px;
+    font-size: 12px;
     color: var(--muted);
 }
-.tr-schedule-title { margin: 25px 0 10px; font-weight: bold; }
-.tr-times span {
-    display: inline-block;
-    border: 1px solid white;
-    border-radius: 20px;
-    padding: 4px 14px;
-    margin: 0 8px 8px 0;
-    font-size: 12px;
-}
-.tr-buttons { margin-top: 25px; }
-.tr-book, .tr-more {
+.tr-watch {
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    padding: 13px 30px;
     font-size: 14px;
-    cursor: pointer;
-    padding: 10px 22px;
-    border-radius: 3px;
+    font-weight: bold;
+    color: #111;
+    background: var(--accent);
+    transition: background 0.3s, transform 0.3s;
 }
-.tr-book { background: var(--accent); color: #111; font-weight: bold; border: none; }
-.tr-more { background: none; color: white; border: 1px solid white; margin-left: 10px; }
+.tr-watch:hover { background: var(--accent-dark); transform: translateY(-3px); }
 
-.tr-arrows { position: absolute; left: 8%; bottom: 40px; z-index: 2; }
-.tr-arrows button {
-    width: 34px; height: 34px;
-    background: none;
-    color: white;
-    border: 1px solid white;
-    border-radius: 50%;
-    font-size: 20px;
-    margin-right: 10px;
+.tr-dots { position: relative; z-index: 3; display: flex; gap: 8px; margin-top: 22px; }
+.tr-dot {
+    width: 9px; height: 9px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.35);
     cursor: pointer;
+    transition: width 0.4s, background 0.4s;
 }
+.tr-dot.active { width: 30px; background: var(--accent); }
 
-.tr-window {
-    position: absolute;
-    left: 620px;
-    right: 0;
-    bottom: 90px;
-    height: 270px;
-    overflow: hidden;
-    border-left: 2px solid white;
-    z-index: 1;
-}
-.tr-row {
-    display: flex;
-    gap: 20px;
-    padding-left: 20px;
-    transition: transform 0.6s;
-}
-.tr-poster {
-    width: 160px;
-    height: 240px;
-    flex-shrink: 0;
-    border-radius: 4px;
-    background-size: cover;
-    background-position: center;
-    opacity: 0.5;
-    cursor: pointer;
-    position: relative;
-    margin-top: 25px;
-    transition: opacity 0.3s;
-}
-.tr-poster.active, .tr-poster:hover { opacity: 1; }
-.tr-poster .num { position: absolute; top: -18px; left: 0; font-size: 11px; }
-.tr-poster .name {
-    position: absolute; bottom: 10px; left: 0; right: 0;
-    padding: 0 6px;
-    text-align: center; font-weight: bold; text-transform: uppercase; font-size: 14px;
+@media (prefers-reduced-motion: reduce) {
+    .tr-card, .tr-bg { transition: none; }
+    .tr-info.swap { animation: none; }
 }
 
 @media (max-width: 900px) {
-    /* ONE SCREEN: heading, details, posters and arrows are stacked in a column that
-       fills the screen exactly (no more overlapping, no page scrolling to see it all) */
-    .tr-section {
-        height: 100vh;
-        height: 100svh;
-        min-height: 580px;
-        display: flex;
-        flex-direction: column;
-        padding: 70px 6% 16px;
-    }
-    .tr-heading, .tr-details, .tr-arrows, .tr-window {
-        position: relative;
-        left: auto; right: auto; top: auto; bottom: auto;
-    }
-    .tr-heading { margin-bottom: 10px; }
-    .tr-details { width: 100%; }
-    .tr-label { display: none; }
-    .tr-number { font-size: 42px; }
-    .tr-title { font-size: 22px; }
-    .tr-title-row { gap: 12px; }
-    .tr-stars { margin: 6px 0; }
-    .tr-schedule-title { margin: 14px 0 8px; }
-    .tr-times span { padding: 3px 12px; margin: 0 6px 6px 0; }
-    .tr-buttons { margin-top: 10px; }
-    .tr-book, .tr-more { padding: 9px 18px; }
-
-    /* poster strip sits at the bottom, edge to edge */
-    .tr-section { --ph: clamp(150px, 26vh, 270px); } /* poster height grows on taller phones */
-    .tr-window {
-        order: 2;
-        margin: auto -6% 0;
-        height: calc(var(--ph) + 35px);
-        flex-shrink: 0;
-        border-left: none;
-        border-top: 2px solid white;
-    }
-    .tr-poster { height: var(--ph); width: calc(var(--ph) * 2 / 3); margin-top: 22px; }
-    .tr-poster .name { font-size: 11px; }
-    .tr-arrows { order: 3; margin-top: 12px; flex-shrink: 0; }
+    .tr-section { --cw: clamp(135px, 38vw, 210px); min-height: 100vh; min-height: 100svh; padding: 74px 5% 22px; }
+    .tr-head .title-mix .script { font-size: clamp(20px, 6vw, 26px); }
+    .tr-head .title-mix .bold { font-size: clamp(30px, 10vw, 44px); }
+    .tr-stage { margin: 8px 0 14px; }
+    .tr-arrow { width: 38px; height: 38px; margin-top: -19px; font-size: 20px; }
+    .tr-title { font-size: clamp(28px, 9vw, 40px); }
+    .tr-tags { margin-bottom: 14px; }
+    .tr-dots { margin-top: 16px; }
+}
+/* short phone screens: smaller posters so the title and WATCH button stay on screen */
+@media (max-width: 900px) and (max-height: 720px) {
+    .tr-section { --cw: clamp(110px, 30vw, 150px); padding-top: 66px; }
+    .tr-head .title-mix .bold { font-size: clamp(26px, 8.5vw, 36px); }
+    .tr-title { font-size: clamp(24px, 7.5vw, 32px); }
+    .tr-tags { margin-bottom: 10px; }
+    .tr-stars { margin-bottom: 8px; }
 }
 
 /* On phones each section settles into place as you scroll, so it fills the screen */
@@ -948,7 +930,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
                 <div class="image-track reverse">
                     <img src="jw.jpg">
                     <img src="s.jpg">
-                    <a href="movie.html?id=oppenheimer" aria-label="Oppenheimer"><img src="o.jpg" alt="Oppenheimer"></a>
+                    <img src="o.jpg" alt="">
                     <img src="tfg.jpg">
                     <img src="l.jpg">
                     <img src="fg.jpg">
@@ -961,7 +943,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
                     <img src="nc.jpg">
                     <img src="j.jpg">
                     <img src="im.jpg">
-                    <a href="movie.html?id=wonderwoman" aria-label="Wonder Woman"><img src="w.jpg" alt="Wonder Woman"></a>
+                    <img src="w.jpg" alt="">
                     <img src="gf.jpg">
                     <img src="bw.jpg">
                 </div>
@@ -972,36 +954,30 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 
     <!-- ================= SECTION 2: TRENDING ================= -->
     <section class="tr-section" id="trending">
-        <div class="tr-backdrop" id="trBackdrop"></div>
-        <video class="tr-video" id="trVideo" muted loop playsinline></video>
-        <div class="tr-shade"></div>
+        <div class="tr-bg on" id="trBgA"></div>
+        <div class="tr-bg" id="trBgB"></div>
+        <div class="tr-veil"></div>
 
-        <p class="tr-heading">TRENDING NOW</p>
+        <div class="tr-head">
+            <p class="tagline">BEST OF 2026</p>
+            <h2 class="title-mix"><span class="script">Trending</span><span class="bold">right now.</span></h2>
+        </div>
 
-        <div class="tr-details">
-            <div class="tr-label">Tomorrow</div>
-            <div class="tr-title-row">
-                <span class="tr-number" id="trNumber"></span>
-                <h2 class="tr-title" id="trTitle"></h2>
-            </div>
+        <!-- the posters, details and dots are built by the script below from the list of movies -->
+        <div class="tr-stage" id="trStage">
+            <button type="button" class="tr-arrow tr-prev" id="trPrev" aria-label="Previous movie">&lsaquo;</button>
+            <button type="button" class="tr-arrow tr-next" id="trNext" aria-label="Next movie">&rsaquo;</button>
+        </div>
+
+        <div class="tr-info" id="trInfo">
+            <p class="tr-count" id="trCount"></p>
+            <h3 class="tr-title" id="trTitle"></h3>
             <div class="tr-stars" id="trStars"></div>
             <div class="tr-tags" id="trTags"></div>
-            <!-- <p class="tr-schedule-title">Showtimes</p> -->
-            <div class="tr-times" id="trTimes"></div>
-            <div class="tr-buttons">
-                <button class="tr-book">Book</button>
-                <button class="tr-more">More ›</button>
-            </div>
+            <button type="button" class="tr-watch" id="trWatch">&#9654; WATCH</button>
         </div>
 
-        <div class="tr-arrows">
-            <button id="trPrev" aria-label="Previous">‹</button>
-            <button id="trNext" aria-label="Next">›</button>
-        </div>
-
-        <div class="tr-window">
-            <div class="tr-row" id="trRow"></div>
-        </div>
+        <div class="tr-dots" id="trDots"></div>
     </section>
 
     <!-- ================= SECTION 3: STUDIOS ================= -->
@@ -1116,112 +1092,149 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
     </script>
 
     <script>
-        // Trending section
+        // Trending section: 3D poster carousel
         (function () {
-            // video / poster / backdrop: put a file path, or leave "" for none
+            // Each movie needs images only (no video):
+            //   poster   = the picture on the card (e.g. "o.jpg")
+            //   backdrop = used if there is no poster
+            // Leave both "" and a colour is shown until you add an image.
+            // Add or remove lines here and the carousel updates by itself.
             var movies = [
-                { name: "Kong: Skull Island", stars: 4, 
-                  times: ["17:30", "19:40", "23:00"], video: "", poster: "", backdrop: "ghosted.jpg", color: "#b5532a" },
-                { name: "Avatar", stars: 4, tags: ["Fantasy", "Sci-Fi", "3D", "PG-13"],
-                  times: ["18:00"], video: "", poster: "", backdrop: "", color: "#1f6fb8" },
-                { name: "Inception", stars: 5, tags: ["Action", "Sci-Fi", "IMAX 3D", "PG-13"],
-                  times: ["15:30", "19:40", "22:00"], video: "", poster: "", backdrop: "", color: "#4d7f94" },
-                { name: "Iron Man", stars: 4, tags: ["Action", "Sci-Fi", "IMAX", "PG-13"],
-                  times: ["17:30", "20:10"], video: "", poster: "", backdrop: "", color: "#c23224" },
-                { name: "Captain Marvel", stars: 4, tags: ["Action", "Superhero", "IMAX 3D", "PG-13"],
-                  times: ["17:00", "19:30", "21:15", "23:00"], video: "", poster: "", backdrop: "", color: "#d0472f" }
+                { name: "Spiderman: Brand New Day", stars: 4, tags: ["Action", "Superhero", "PG-13"],
+                  poster: "", backdrop: "ghosted.jpg", color: "#b5532a" },
+                { name: "The Odyssey", stars: 4, tags: ["Fantasy", "Sci-Fi", "3D", "PG-13"],
+                  poster: "", backdrop: "", color: "#1f6fb8" },
+                { name: "Project Hail Mary", stars: 5, tags: ["Action", "Sci-Fi", "IMAX 3D", "PG-13"],
+                  poster: "", backdrop: "", color: "#4d7f94" },
+                { name: "Obsession", stars: 4, tags: ["Action", "Sci-Fi", "IMAX", "PG-13"],
+                  poster: "", backdrop: "", color: "#c23224" },
+                { name: "Jailer 2", stars: 4, tags: ["Action", "Superhero", "IMAX 3D", "PG-13"],
+                  poster: "", backdrop: "", color: "#d0472f" }
             ];
 
-            var backdrop = document.getElementById("trBackdrop");
-            var bgVideo  = document.getElementById("trVideo");
-            var number   = document.getElementById("trNumber");
-            var title    = document.getElementById("trTitle");
-            var stars    = document.getElementById("trStars");
-            var tags     = document.getElementById("trTags");
-            var times    = document.getElementById("trTimes");
-            var row      = document.getElementById("trRow");
-            var current  = 0;
+            var section = document.getElementById("trending");
+            var stage   = document.getElementById("trStage");
+            var info    = document.getElementById("trInfo");
+            var count   = document.getElementById("trCount");
+            var title   = document.getElementById("trTitle");
+            var stars   = document.getElementById("trStars");
+            var tags    = document.getElementById("trTags");
+            var dotsBox = document.getElementById("trDots");
+            var bgs     = [document.getElementById("trBgA"), document.getElementById("trBgB")];
+            var n = movies.length, current = 0, bgOn = 0;
+            var cards = [], dots = [];
 
-            // build posters once
+            function pic(m) {
+                var src = m.poster || m.backdrop;
+                return src ? "url('" + src + "') center / cover"
+                           : "linear-gradient(160deg, " + m.color + ", #000 85%)";
+            }
+
             movies.forEach(function (m, i) {
-                var p = document.createElement("div");
-                p.className = "tr-poster";
-                if (m.poster) {
-                    p.style.backgroundImage = "url('" + m.poster + "')";
-                } else {
-                    p.style.background = m.color;
-                    p.innerHTML = '<div class="name">' + m.name + '</div>';
+                var c = document.createElement("div");
+                c.className = "tr-card";
+                c.style.background = pic(m);
+                c.setAttribute("role", "button");
+                c.tabIndex = 0;
+                c.setAttribute("aria-label", m.name);
+                if (!m.poster && !m.backdrop) {
+                    var nm = document.createElement("span");
+                    nm.className = "nm";
+                    nm.textContent = m.name;
+                    c.appendChild(nm);
                 }
-                p.innerHTML += '<div class="num">0' + (i + 1) + '</div>';
-                p.onclick = function () { showMovie(i); };
-                row.appendChild(p);
+                c.addEventListener("click", function () { if (i !== current) show(i); });
+                c.addEventListener("keydown", function (e) {
+                    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(i); }
+                });
+                stage.appendChild(c);
+                cards.push(c);
+
+                var d = document.createElement("button");
+                d.type = "button";
+                d.className = "tr-dot";
+                d.setAttribute("aria-label", "Show " + m.name);
+                d.addEventListener("click", function () { show(i); });
+                dotsBox.appendChild(d);
+                dots.push(d);
             });
 
-            function showMovie(index) {
-                if (index >= movies.length) index = 0;
-                if (index < 0) index = movies.length - 1;
+            function layout() {
+                cards.forEach(function (c, k) {
+                    // shortest way round the circle: -2 .. 2 for five movies
+                    var d = k - current;
+                    if (d > n / 2) d -= n;
+                    if (d < -n / 2) d += n;
+                    var ad = Math.abs(d);
+                    c.style.transform = "translateX(" + (-50 + d * 64) + "%) translateZ(" + (-ad * 110) + "px) rotateY(" + (-d * 30) + "deg) scale(" + (1 - ad * 0.08) + ")";
+                    c.style.zIndex = 10 - ad;
+                    c.style.opacity = ad === 0 ? 1 : ad === 1 ? 0.8 : ad === 2 ? 0.45 : 0;
+                    c.style.filter = ad === 0 ? "none" : "brightness(0.6)";
+                    c.style.pointerEvents = ad > 2 ? "none" : "auto";
+                    c.classList.toggle("active", d === 0);
+                });
+            }
+
+            function show(index) {
+                index = ((index % n) + n) % n;
+                var changed = index !== current;
                 current = index;
                 var m = movies[current];
 
-                number.textContent = "0" + (current + 1);
-                title.textContent  = m.name;
-                stars.textContent  = "★".repeat(m.stars) + "☆".repeat(5 - m.stars);
-                tags.innerHTML  = m.tags.map(function (t) { return "<span>" + t + "</span>"; }).join("");
-                times.innerHTML = m.times.map(function (t) { return "<span>" + t + "</span>"; }).join("");
+                layout();
 
-                if (m.backdrop) {
-                    backdrop.style.background = "url('" + m.backdrop + "') center / cover";
-                } else {
-                    backdrop.style.background = "radial-gradient(circle at 30% 30%, " + m.color + ", var(--bg) 70%)";
-                }
+                // blurred background: fade the second layer in over the first
+                bgOn = 1 - bgOn;
+                bgs[bgOn].style.background = pic(m);
+                bgs[bgOn].classList.add("on");
+                bgs[1 - bgOn].classList.remove("on");
 
-                if (m.video) {
-                    bgVideo.src = m.video;
-                    bgVideo.style.display = "block";
-                    bgVideo.play();
-                } else {
-                    bgVideo.pause();
-                    bgVideo.style.display = "none";
-                }
-
-                // restart the zoom effect on the background (and video) for the new movie
-                [backdrop, bgVideo].forEach(function (el) {
-                    el.classList.remove("zoom");
-                    void el.offsetWidth; // forces the browser to reset the animation
-                    el.classList.add("zoom");
+                count.textContent = "0" + (current + 1) + " / 0" + n;
+                title.textContent = m.name;
+                stars.textContent = "★".repeat(m.stars) + "☆".repeat(5 - m.stars);
+                tags.innerHTML = "";
+                (m.tags || []).forEach(function (t) {
+                    var s = document.createElement("span");
+                    s.textContent = t;
+                    tags.appendChild(s);
                 });
+                dots.forEach(function (d, k) { d.classList.toggle("active", k === current); });
 
-                var all = row.children;
-                for (var k = 0; k < all.length; k++) all[k].classList.remove("active");
-                all[current].classList.add("active");
-
-                // poster width (160 or 130 on mobile) + 20px gap
-                var step = all[0].offsetWidth + 20;
-                row.style.transform = "translateX(-" + (current * step) + "px)";
+                if (changed) {                       // replay the small fade-up on the text
+                    info.classList.remove("swap");
+                    void info.offsetWidth;
+                    info.classList.add("swap");
+                }
+                tick = Date.now();
             }
 
-            document.getElementById("trNext").onclick = function () { showMovie(current + 1); };
-            document.getElementById("trPrev").onclick = function () { showMovie(current - 1); };
-            // auto-advance every 5 s (it keeps going when the mouse is over it);
-            // it only waits while a finger is touching it or the tab is in the background
-            var paused = false, resumeTimer = null;
-            var trSection = document.getElementById("trending");
-            setInterval(function () { if (!paused && !document.hidden) showMovie(current + 1); }, 5000);
+            document.getElementById("trNext").onclick = function () { show(current + 1); };
+            document.getElementById("trPrev").onclick = function () { show(current - 1); };
 
-            // swipe left / right on a phone to change the movie
+            // auto-advance every 5 s; it waits while the mouse is over the carousel or a finger is touching it
+            var tick = Date.now(), paused = false, resume = null;
+            [stage, info].forEach(function (el) {
+                el.addEventListener("mouseenter", function () { paused = true; });
+                el.addEventListener("mouseleave", function () { paused = false; tick = Date.now(); });
+            });
+            setInterval(function () {
+                if (!paused && !document.hidden && Date.now() - tick >= 5000) show(current + 1);
+            }, 300);
+
+            // swipe left / right on a phone
             var sx = 0, sy = 0;
-            trSection.addEventListener("touchstart", function (e) {
+            section.addEventListener("touchstart", function (e) {
                 sx = e.touches[0].clientX; sy = e.touches[0].clientY;
-                paused = true; clearTimeout(resumeTimer);
+                paused = true; clearTimeout(resume);
             }, { passive: true });
-            trSection.addEventListener("touchend", function (e) {
+            section.addEventListener("touchend", function (e) {
                 var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
-                if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) showMovie(current + (dx < 0 ? 1 : -1));
-                resumeTimer = setTimeout(function () { paused = false; }, 6000);
+                if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) show(current + (dx < 0 ? 1 : -1));
+                resume = setTimeout(function () { paused = false; tick = Date.now(); }, 6000);
             }, { passive: true });
-            window.addEventListener("resize", function () { showMovie(current); });
 
-            showMovie(0);
+            window.addEventListener("resize", layout);
+            show(0);
         })();
     </script>
     <!-- ================= "NOT AVAILABLE" POPUP ================= -->
@@ -1475,7 +1488,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
         // Shows a popup instead of a broken page when someone clicks:
         //   - a movie link whose id is not in movies.js
         //   - a poster that has no movie page yet
-        //   - Trending "More" / "Book Now" for a title you have not added
+        //   - Trending "WATCH" for a title you have not added to movies.js
         // "Request this movie" opens MovieBot (chatbot.js).
         (function () {
             var overlay  = document.getElementById("naOverlay");
@@ -1539,23 +1552,13 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
                 }
             });
 
-            // 2) plain posters in the gallery (no movie page yet)
-            document.getElementById("movies").addEventListener("click", function (e) {
-                var img = e.target.closest(".image-track img");
-                if (!img || img.closest("a")) return;
-                showUnavailable(img.alt || "This movie", "We don't have a page for this title yet. Check back soon!", false);
-            });
-
-            // 3) Trending buttons
-            document.querySelector(".tr-more").addEventListener("click", function () {
+            // 2) Trending button
+            // WATCH opens the movie page if the title is in movies.js, otherwise the popup
+            document.getElementById("trWatch").addEventListener("click", function () {
                 var name = document.getElementById("trTitle").textContent;
                 var id = findByTitle(name);
                 if (id) window.location.href = "movie.html?id=" + id;
                 else showUnavailable(name);
-            });
-            document.querySelector(".tr-book").addEventListener("click", function () {
-                var name = document.getElementById("trTitle").textContent;
-                showUnavailable(name, "Booking isn't open for this title yet. Please check back later.", false);
             });
         })();
     </script>
