@@ -130,14 +130,14 @@
 
     /* ---------------- styles ---------------- */
     var css = [
-        ".mb-launch{position:fixed;right:24px;bottom:24px;z-index:400;width:78px;height:78px;border-radius:50%;border:3px solid #111;cursor:pointer;background:var(--accent,#E57130);color:#111;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(0,0,0,.6),0 0 0 3px color-mix(in srgb, var(--accent,#E57130) 35%, transparent);transition:transform .25s,background .25s}",
+        ".mb-launch{position:fixed;left:24px;bottom:24px;z-index:400;width:78px;height:78px;border-radius:50%;border:3px solid #111;cursor:pointer;background:var(--accent,#E57130);color:#111;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(0,0,0,.6),0 0 0 3px color-mix(in srgb, var(--accent,#E57130) 35%, transparent);transition:transform .25s,background .25s}",
         ".mb-launch svg{width:40px;height:40px}",
         ".mb-launch::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:3px solid var(--accent,#E57130);opacity:0;animation:mbPulse 2.2s ease-out infinite;pointer-events:none}",
         "@keyframes mbPulse{0%{transform:scale(.9);opacity:.8}100%{transform:scale(1.45);opacity:0}}",
         ".mb-launch:hover{transform:translateY(-3px) scale(1.06);background:var(--accent-dark,#C95E22)}",
         ".mb-launch.hide{display:none}",
-        ".mb-tip{position:fixed;right:116px;bottom:40px;z-index:400;max-width:210px;padding:10px 14px;font:14px/1.4 'Outfit',Arial,sans-serif;color:#fff;background:var(--bg-soft,#151515);border:1px solid rgba(255,255,255,.12);border-radius:12px 12px 4px 12px;box-shadow:0 8px 24px rgba(0,0,0,.45);cursor:pointer;animation:mbIn .3s ease}",
-        ".mb-panel{position:fixed;right:24px;bottom:24px;z-index:401;width:370px;max-width:calc(100vw - 24px);height:min(600px,calc(100vh - 40px));display:none;flex-direction:column;overflow:hidden;background:var(--bg,#000000);color:#fff;font-family:'Outfit',Arial,sans-serif;font-size:14px;border:1px solid rgba(255,255,255,.12);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.65)}",
+        ".mb-tip{position:fixed;left:116px;bottom:40px;z-index:400;max-width:210px;padding:10px 14px;font:14px/1.4 'Outfit',Arial,sans-serif;color:#fff;background:var(--bg-soft,#151515);border:1px solid rgba(255,255,255,.12);border-radius:12px 12px 12px 4px;box-shadow:0 8px 24px rgba(0,0,0,.45);cursor:pointer;animation:mbIn .3s ease}",
+        ".mb-panel{position:fixed;left:24px;bottom:24px;z-index:401;width:370px;max-width:calc(100vw - 24px);height:min(600px,calc(100vh - 40px));display:none;flex-direction:column;overflow:hidden;background:var(--bg,#000000);color:#fff;font-family:'Outfit',Arial,sans-serif;font-size:14px;border:1px solid rgba(255,255,255,.12);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.65)}",
         ".mb-panel.open{display:flex;animation:mbIn .25s ease}",
         "@keyframes mbIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}",
         ".mb-head{display:flex;align-items:center;gap:10px;padding:14px 14px 14px 16px;background:var(--bg-soft,#151515);border-bottom:1px solid rgba(255,255,255,.08)}",
@@ -174,7 +174,7 @@
         ".mb-form input:focus{border-color:var(--accent,#E57130)}",
         ".mb-form button{width:42px;height:42px;flex-shrink:0;border:none;border-radius:50%;background:var(--accent,#E57130);color:#111;cursor:pointer;font-size:17px}",
         ".mb-form button:disabled{opacity:.5;cursor:default}",
-        "@media (max-width:480px){.mb-launch{width:68px;height:68px;right:16px;bottom:16px}.mb-launch svg{width:34px;height:34px}.mb-form input{font-size:16px}.mb-panel{right:0;left:0;bottom:0;width:100%;max-width:none;height:88vh;border-radius:16px 16px 0 0}.mb-tip{display:none}}",
+        "@media (max-width:480px){.mb-launch{width:68px;height:68px;left:16px;bottom:16px}.mb-launch svg{width:34px;height:34px}.mb-form input{font-size:16px}.mb-panel{right:0;left:0;bottom:0;width:100%;max-width:none;height:88vh;border-radius:16px 16px 0 0}.mb-tip{display:none}}",
         "@media (prefers-reduced-motion:reduce){.mb-msg,.mb-cards,.mb-panel.open,.mb-tip{animation:none}.mb-typing i{animation:none}.mb-launch::after{animation:none;display:none}}"
     ].join("\n");
 
