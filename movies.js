@@ -1603,7 +1603,7 @@ mastersoftheuniverse: {
     "Prince Adam must save his family and his world from the evil Skeletor. Teaming up with his closest allies, Teela and Duncan, also known as Man-At-Arms, he embraces his true destiny as He-Man, the most powerful man in the universe.",
   language: "Dual Audio (English, Hindi)",
   caution: "Dual Audio is available when you download the movie",
-  watchLink: "",
+  watchLink: "https://drive.google.com/file/d/1Ih2fN6xiVMG2joDVBl_O15fblkmJGXPO/view?usp=sharing",
 
   accent: "224, 72, 42",
   theme: {
@@ -2318,7 +2318,7 @@ projecthailmary: {
     "Science teacher Ryland Grace wakes up alone on a spacecraft with no memory of who he is or why he is there. As his memory returns, he realizes he is humanity's last hope, sent across the galaxy to stop a crisis that threatens Earth, and he is not as alone as he thinks.",
   language: "Dual Audio (English, Hindi)",
   caution: "Dual Audio is available when you download the movie",
-  watchLink: "",
+  watchLink: "https://drive.google.com/file/d/1NOlklIpsMbK5ql389xV0I8my_nozNB5S/view?usp=sharing",
 
   accent: "42, 150, 168",
   theme: {
@@ -2493,7 +2493,7 @@ predatorbadlands: {
     "Cast out by his own clan, a young Predator named Dek travels to the deadliest planet in the galaxy in search of the ultimate adversary. There he finds an unlikely ally, and together they set out to take down a creature that no one has ever been able to kill.",
   language: "Dual Audio (English, Hindi)",
   caution: "Dual Audio is available when you download the movie",
-  watchLink: "",
+  watchLink: "https://drive.google.com/file/d/1WC32zdMJT7wPxv7mk_pwbPYUBzcaquPQ/view?usp=sharing",
 
   accent: "226, 52, 40",
   theme: {
